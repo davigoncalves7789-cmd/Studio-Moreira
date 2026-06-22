@@ -3,14 +3,13 @@ body {
       font-family: Arial, Helvetica, sans-serif;
       color: #222;
       min-height: 100vh;
+      margin: 0;
+      padding: 0;
     }
 
     header {
       background-color: pink;
-      border: 3px solid black;
-      border-radius: 14px;
-      margin: 18px auto;
-      max-width: 1300px;
+      border-bottom: 3px solid black;
       padding: 18px 28px 16px;
       display: flex;
       flex-direction: column;
@@ -121,15 +120,43 @@ body {
       letter-spacing: .5px;
     }
 
-    /* ── Grade de buquês ── */
-    .galeria {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 38px;
-      padding: 0 24px 48px;
-      max-width: 1200px;
+    /* ── Carrossel ── */
+    .carrossel-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 8px 48px;
+      max-width: 100%;
       margin: 0 auto;
+      box-sizing: border-box;
     }
+
+    .carrossel {
+      display: flex;
+      gap: 20px;
+      overflow: hidden;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .seta {
+      background: deeppink;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      font-size: 20px;
+      cursor: pointer;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 3px 10px rgba(0,0,0,.2);
+      transition: opacity .2s;
+    }
+    .seta:hover { opacity: .8; }
+    .seta:disabled { opacity: .3; cursor: default; }
 
     .card {
       background: #fff5f5;
@@ -140,7 +167,10 @@ body {
       flex-direction: column;
       align-items: center;
       box-shadow: 0 3px 12px rgba(0,0,0,.08);
-      transition: transform 0.5s ease, box-shadow .2s, opacity 0.5s ease;
+      transition: transform 0.3s ease, box-shadow .2s, opacity 0.5s ease;
+      flex: 0 0 calc(25% - 15px);
+      min-width: 0;
+      box-sizing: border-box;
     }
     .card:hover {
       transform: translateY(-4px);
@@ -158,45 +188,40 @@ body {
       line-height: 1.4;
     }
     .card-body {
-      margin-left: 15px;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      gap: 19px;
-      padding: 16px 12px;
+      gap: 8px;
+      padding: 10px 10px 0;
       width: 100%;
+      box-sizing: border-box;
     }
     .card-body img {
-      width: 150px;
-      height: 150px;
-      min-width: 150px;
-      border-radius: 50%;
-      border: 2px solid dimgray;
+      width: 100%;
+      height: 160px;
+      border-radius: 10px;
       object-fit: cover;
-      flex-shrink: 0;
     }
     .card-desc {
       background-color: pink;
       border-radius: 10px;
-      padding: 20px 22px;
-      flex: 1;
-      max-width: 240px;
+      padding: 8px 10px;
+      width: 100%;
+      box-sizing: border-box;
       color: #222;
-      font-size: 13px;
-      line-height: 1.7;
+      font-size: 11px;
+      line-height: 1.5;
       text-align: center;
       display: flex;
-      flex-direction: column-reverse;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      gap: 10px;
-      margin: 10px 20px 10px 0;
+      gap: 6px;
+      margin: 0 0 10px;
     }
-    .card-desc h3 {
+    .card-desc .preco {
       font-size: 14px;
       font-weight: 700;
       color: #8B0032;
-      margin: 0;
     }
     .card-desc p { margin: 0; }
 
@@ -214,15 +239,15 @@ body {
     .no-results.visible { display: block; }
 
     .banner-cesta {
-      text-align: center;
-      align-items: center;
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      flex-wrap: wrap;
+      padding: 0 24px 48px;
       max-width: 1000px;
       margin: 0 auto;
-      padding: 0 24px 48px;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 53px;
     }
+
     .card-cesta {
       border-radius: 25px;
       padding: 23px;
@@ -232,8 +257,9 @@ body {
       display: flex;
       flex-direction: column;
       align-items: center;
-      width: 100%;
-      transition: transform 0.5s ease, opacity 0.5s ease;
+      width: 420px;
+      max-width: 100%;
+      transition: transform 0.3s ease, opacity 0.5s ease;
     }
     .card-cesta h2 {
       text-align: center;
@@ -272,6 +298,58 @@ body {
       color: #8B0032;
       margin-bottom: 10px;
       padding: 5px;
+    }
+
+    #info-icone {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      background: deeppink;
+      color: white;
+      padding: 12px 18px;
+      border-radius: 30px;
+      font-size: 16px;
+      cursor: pointer;
+      z-index: 999;
+      box-shadow: 0 4px 12px rgba(0,0,0,.2);
+    }
+
+    #info-painel {
+      display: none;
+      position: fixed;
+      bottom: 80px;
+      left: 24px;
+      background: white;
+      border: 2px solid #f0c0c8;
+      border-radius: 18px;
+      padding: 20px;
+      width: 300px;
+      z-index: 999;
+      box-shadow: 0 8px 24px rgba(0,0,0,.15);
+    }
+
+    #info-painel h3 {
+      color: #8B0032;
+      margin-bottom: 12px;
+    }
+
+    #info-painel p {
+      font-size: 13px;
+      color: #444;
+      line-height: 1.7;
+      margin: 0 0 12px;
+    }
+
+    #info-painel button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      border-radius: 20px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      background: #f0c0c8;
+      color: #8B0032;
     }
 
     #carrinho-icone {
@@ -364,6 +442,36 @@ body {
       cursor: default;
     }
 
+    #lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.85);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      cursor: zoom-out;
+    }
+    #lightbox.ativo { display: flex; }
+    #lightbox img {
+      max-width: 90vw;
+      max-height: 90vh;
+      border-radius: 12px;
+      object-fit: contain;
+      box-shadow: 0 8px 40px rgba(0,0,0,.5);
+      cursor: default;
+    }
+    #lightbox-fechar {
+      position: absolute;
+      top: 20px;
+      right: 28px;
+      color: white;
+      font-size: 32px;
+      cursor: pointer;
+      line-height: 1;
+      user-select: none;
+    }
+
     footer {
       text-align: center;
       padding: 21px;
@@ -375,9 +483,7 @@ body {
     @media (max-width: 700px) {
 
       header {
-        margin: 8px;
         padding: 12px 12px 10px;
-        border-radius: 10px;
         gap: 10px;
       }
 
@@ -411,13 +517,7 @@ body {
       .search-wrap { margin-top: 6px; }
       .search-wrap input { font-size: 13px; padding: 8px 14px; }
 
-      .galeria {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    padding: 0 10px 32px;
-     }
-
-      .card { border-radius: 10px; }
+      .card { flex: 0 0 calc(50% - 12px); border-radius: 10px; }
 
       .card-title {
         font-size: 11px;
@@ -427,35 +527,29 @@ body {
       .card-body {
         flex-direction: column;
         align-items: center;
-        gap: 8px;
-        padding: 6px 6px;
+        gap: 6px;
+        padding: 6px;
         margin-left: 0;
       }
       .card-body img {
-  width: 90%;
-  aspect-ratio: 1;
-  border-radius: 10px;
-  min-width: unset;
-  height: auto;
-}
-      .card-desc {
-        max-width: 90%;
-        width: 90%;
-        padding: 6px 6px;
-        font-size: 12px;
-        line-height: 1.5;
-        margin: 0.2rem;
-        gap: 6px;
+        width: 100%;
+        height: 110px;
+        border-radius: 10px;
+        object-fit: cover;
       }
-      .card-desc h3  { font-size: 12px; }
+      .card-desc {
+        max-width: 100%;
+        width: 100%;
+        padding: 6px;
+        font-size: 11px;
+        line-height: 1.5;
+        margin: 0 0 6px;
+        gap: 4px;
+      }
       .btn-adicionar { font-size: 11px; padding: 5px 10px; margin-top: 4px; }
 
-      .banner-cesta {
-        grid-template-columns: 1fr;
-        gap: 12px;
-        padding: 0 10px 32px;
-      }
       .card-cesta {
+        width: 100%;
         padding: 10px;
         border-radius: 14px;
       }
@@ -490,6 +584,8 @@ body {
 
       #carrinho-icone { font-size: 13px; padding: 9px 13px; bottom: 16px; right: 16px; }
       #carrinho-painel { width: calc(100vw - 32px); right: 16px; bottom: 60px; }
+      #info-icone { font-size: 13px; padding: 9px 13px; bottom: 16px; left: 16px; }
+      #info-painel { width: calc(100vw - 32px); left: 16px; bottom: 60px; }
     }
 .card,
 .card-cesta {

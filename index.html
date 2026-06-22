@@ -8,19 +8,32 @@
     <link rel="stylesheet" href="index.css">
 </head>
 <body>
- 
+
+  <div id="info-icone" onclick="abrirInfo()">
+    ℹ️ Info
+  </div>
+
+  <div id="info-painel">
+    <h3>Informações</span>
+    <p>
+      <!-- ✏️ Escreva aqui as informações que quiser mostrar -->
+      <!-- Ex: prazo de entrega, formas de pagamento, área de entrega, etc. -->
+    </p>
+    <button onclick="fecharInfo()">Fechar</button>
+  </div>
+
   <div id="carrinho-icone" onclick="abrirCarrinho()">
     🛒 <span id="carrinho-count">0</span>
   </div>
- 
+
   <div id="carrinho-painel">
-    <h3>Seu pedido</h3>
+    <h3>Seu pedido</span>
     <ul id="carrinho-lista"></ul>
     <p id="carrinho-total"></p>
     <button onclick="finalizarPedido()">💬 Finalizar pelo WhatsApp</button>
     <button onclick="fecharCarrinho()">Fechar</button>
   </div>
- 
+
   <header>
     <div class="header-top">
       <div class="header-banner">
@@ -45,293 +58,481 @@
              placeholder="🔍 Digite o buquê que você quer (ex: rosa, vermelho, corinthians…)" />
     </div>
   </header>
- 
+
+  <!-- BUQUÊS -->
   <h2 class="galeria-title">🌹 Nossos Buquês</h2>
- 
-  <div class="galeria" id="galeria">
- 
-    <!-- PRODUTO 1 -->
-    <div class="card"
-         data-title="Buquê de rosas vermelhas com ferreiro roche"
-         data-desc="9 rosas simples, 18 Ferrero Rocher, 2 borboletas metálicas, papel coreano, laço de cetim">
-      <div class="card-title">Buquê de rosas vermelhas com Ferrero Rocher</div>
-      <div class="card-body">
-        <img src="./img/2.jpeg" alt="Buquê de rosas vermelhas com Ferrero Rocher" />
-        <div class="card-desc">
-          <h3>Valor: R$ 150,00</h3>
-          <p>9 rosas simples<br>+ 18 Ferrero Rocher<br>+ 2 borboletas metálicas<br>+ 1 papel coreano<br>+ 1 laço de cetim</p>
-          <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
-            data-nome="Buquê de rosas vermelhas com Ferrero Rocher"
-            data-preco="150,00">
-            🛒 Adicionar
-          </button>
+  <div class="carrossel-wrap" id="wrap-buques">
+    <button class="seta seta-esq" onclick="moverCarrossel('buques', -1)">&#8592;</button>
+    <div class="carrossel" id="galeria">
+
+      <div class="card"
+           data-title="Buquê de rosas/com Ferrero Rocher"
+           data-desc="9 rosas simples, 18 Ferrero Rocher, 2 borboletas metálicas, papel coreano, laço de cetim">
+        <div class="card-title">Buquê de rosas/com Ferrero Rocher</div>
+        <div class="card-body">
+          <img src="./img/2.jpeg" alt="Buquê de rosas vermelhas com Ferrero Rocher" />
+          <div class="card-desc">
+            <p>9 rosas simples<br>+ 18 Ferrero Rocher<br>+ 2 borboletas metálicas<br>+ 1 papel coreano<br>+ 1 laço de cetim</p>
+            <span class="preco">Valor: R$ 150,00</span>
+            <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
+              data-nome="Buquê de rosas/com Ferrero Rocher"
+              data-preco="150,00">
+              🛒 Adicionar
+            </button>
+          </div>
         </div>
       </div>
-    </div>
- 
-    <!-- PRODUTO 2 -->
-    <div class="card"
-         data-title="Buquê de rosas vermelhas com glitter e ferreiro roche"
-         data-desc="10 rosas, 12 Ferrero Rocher, 1 borboleta metálica, papel coreano, laço de cetim">
-      <div class="card-title">Buquê de rosas vermelhas com glitter</div>
-      <div class="card-body">
-        <img src="./img/3.jpeg" alt="Buquê de rosas vermelhas com glitter" />
-        <div class="card-desc">
-          <h3>Valor: R$ 120,00</h3>
-          <p>10 rosas<br>+ 12 Ferrero Rocher<br>+ 1 borboleta metálica<br>+ 1 papel coreano<br>+ 1 laço de cetim</p>
-          <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
-            data-nome="Buquê de rosas vermelhas com glitter e Ferrero Rocher"
-            data-preco="120,00">
-            🛒 Adicionar
-          </button>
+
+      <div class="card"
+           data-title="Buquê de rosas/com Ferrero Rocher"
+           data-desc="10 rosas, 12 Ferrero Rocher, 1 borboleta metálica, papel coreano, laço de cetim">
+        <div class="card-title">Buquê de rosas/com Ferrero Rocher</div>
+        <div class="card-body">
+          <img src="./img/3.jpg" alt="Buquê de rosas/com Ferrero Rocher" />
+          <div class="card-desc">
+            <p>10 rosas<br>+ 12 Ferrero Rocher<br>+ 1 borboleta metálica<br>+ 1 papel coreano<br>+ 1 laço de cetim</p>
+            <span class="preco">Valor: R$ 120,00</span>
+            <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
+              data-nome="Buquê de rosas/com Ferrero Rocher"
+              data-preco="120,00">
+              🛒 Adicionar
+            </button>
+          </div>
         </div>
       </div>
-    </div>
- 
-    <!-- PRODUTO 3 -->
-    <div class="card"
-         data-title="Buquê de rosas vermelhas com Stitch"
-         data-desc="20 rosas com glitter, anjinho Stitch, papel coreano, laço de cetim">
-      <div class="card-title">Buquê de rosas vermelhas com Stitch</div>
-      <div class="card-body">
-        <img src="./img/4.jpg" alt="Buquê de rosas vermelhas com Stitch" />
-        <div class="card-desc">
-          <h3>Valor: R$ 190,00</h3>
-          <p>20 rosas com glitter<br>+ anjinho Stitch<br>+ 1 papel coreano<br>+ 1 laço de cetim</p>
-          <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
-            data-nome="Buquê de rosas vermelhas com Stitch"
-            data-preco="190,00">
-            🛒 Adicionar
-          </button>
+
+      <div class="card"
+           data-title="Buquê de flores mistas"
+           data-desc="8 rosas coloridas sem glitter, 2 borboletas metálicas, papel coreano, laço de cetim">
+        <div class="card-title">Buquê de flores mistas</div>
+        <div class="card-body">
+          <img src="./img/5.jpg" alt="Buquê de flores mistas" />
+          <div class="card-desc">
+            <p>8 flores coloridas<br>+ 2 borboletas metálicas<br>+ 1 papel coreano<br>+ 1 laço de cetim</p>
+            <span class="preco">Valor: R$ 50,73</span>
+            <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
+              data-nome="Buquê de flores mistas"
+              data-preco="50,73">
+              🛒 Adicionar
+            </button>
+          </div>
         </div>
       </div>
-    </div>
- 
-    <!-- PRODUTO 4 -->
-    <div class="card"
-         data-title="Buquê de flores mistas colorido"
-         data-desc="8 rosas coloridas sem glitter, 2 borboletas metálicas, papel coreano, laço de cetim">
-      <div class="card-title">Buquê de flores mistas</div>
-      <div class="card-body">
-        <img src="./img/5.jpg" alt="Buquê de flores mistas" />
-        <div class="card-desc">
-          <h3>Valor: R$ 50,00</h3>
-          <p>8 flores coloridas<br>+ 2 borboletas metálicas<br>+ 1 papel coreano<br>+ 1 laço de cetim</p>
-          <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
-            data-nome="Buquê de flores mistas"
-            data-preco="50,00">
-            🛒 Adicionar
-          </button>
+
+      <div class="card"
+           data-title="Buquê de ouro branco"
+           data-desc="18 rosas, 3 lírios, 18 bom bom, 2 borboletas metálicas, papel coreano, led, laço de cetim">
+        <div class="card-title">Buquê de ouro branco</div>
+        <div class="card-body">
+          <img src="./img/8.jpg" alt="Buquê de ouro branco" />
+          <div class="card-desc">
+            <p>18 rosas<br>+ 3 lírios<br>+ 18 bom bom<br>+ 2 borboletas metálicas<br>+ 1 papel coreano<br>+ 1 laço de cetim</p>
+            <span class="preco">Valor: R$ 186,50</span>
+            <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
+              data-nome="Buquê de ouro branco"
+              data-preco="186,50">
+              🛒 Adicionar
+            </button>
+          </div>
         </div>
       </div>
-    </div>
- 
-    <!-- PRODUTO 5 -->
-    <div class="card"
-         data-title="Buquê do Corinthians personalizado"
-         data-desc="15 rosas sem glitter 2 cores, 4 fotos personalizadas, papel coreano, laço de cetim">
-      <div class="card-title">Buquê do Corinthians</div>
-      <div class="card-body">
-        <img src="./img/6.jpg" alt="Buquê do Corinthians" />
-        <div class="card-desc">
-          <h3>Valor: R$ 57,00</h3>
-          <p>15 rosas (2 cores)<br>+ 4 fotos personalizadas<br>+ 1 papel coreano<br>+ 1 laço de cetim</p>
-          <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
-            data-nome="Buquê do Corinthians"
-            data-preco="57,00">
-            🛒 Adicionar
-          </button>
+
+      <div class="card"
+           data-title="Buquê de 1/girassol"
+           data-desc="18 rosas, 3 lírios, 18 bom bom, 2 borboletas metálicas, papel coreano, led, laço de cetim">
+        <div class="card-title">Buquê de 1/girassol</div>
+        <div class="card-body">
+          <img src="./img/21.jpeg" alt="Buquê de 1/girassol" />
+          <div class="card-desc">
+            <p>18 rosas<br>+ 3 lírios<br>+ 18 bom bom<br>+ 2 borboletas metálicas<br>+ 1 papel coreano<br>+ 1 laço de cetim</p>
+            <span class="preco">Valor: R$ 56,50</span>
+            <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
+              data-nome="Buquê de 1/girassol"
+              data-preco="56,50">
+              🛒 Adicionar
+            </button>
+          </div>
         </div>
       </div>
-    </div>
- 
-    <!-- PRODUTO 6 -->
-    <div class="card"
-         data-title="Buquê simples de flores vermelhas com glitter"
-         data-desc="7 rosas com glitter, papel coreano, laço de cetim">
-      <div class="card-title">Buquê simples de flores vermelhas</div>
-      <div class="card-body">
-        <img src="./img/7.jpeg" alt="Buquê simples de flores vermelhas" />
-        <div class="card-desc">
-          <h3>Valor: R$ 77,00</h3>
-          <p>7 rosas c/ glitter<br>+ 1 papel coreano<br>+ 1 laço de cetim</p>
-          <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
-            data-nome="Buquê simples de flores vermelhas"
-            data-preco="77,00">
-            🛒 Adicionar
-          </button>
+
+      <div class="card"
+           data-title="Buquê de 7/girassois"
+           data-desc="18 rosas, 3 lírios, 18 bom bom, 2 borboletas metálicas, papel coreano, led, laço de cetim">
+        <div class="card-title">Buquê de 7/girassois</div>
+        <div class="card-body">
+          <img src="./img/17.jpeg"alt="Buquê de 7/girassois" />
+          <div class="card-desc">
+            <p>18 rosas<br>+ 3 lírios<br>+ 18 bom bom<br>+ 2 borboletas metálicas<br>+ 1 papel coreano<br>+ 1 laço de cetim</p>
+            <span class="preco">Valor: R$ 48,60</span>
+            <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
+              data-nome="Buquê de 7/girassois"
+              data-preco="48,60">
+              🛒 Adicionar
+            </button>
+          </div>
         </div>
       </div>
-    </div>
- 
-    <!-- PRODUTO 7 -->
-    <div class="card"
-         data-title="Buquê prêmio de rosas clássico com lírios e bom bom"
-         data-desc="18 rosas, 3 lírios, 18 bom bom, 2 borboletas metálicas, papel coreano, led, laço de cetim">
-      <div class="card-title">Buquê prêmio de rosas clássico</div>
-      <div class="card-body">
-        <img src="./img/8.jpg" alt="Buquê prêmio de rosas clássico" />
-        <div class="card-desc">
-          <h3>Valor: R$ 186,50</h3>
-          <p>18 rosas<br>+ 3 lírios<br>+ 18 bom bom<br>+ 2 borboletas metálicas<br>+ 1 papel coreano<br>+ 1 laço de cetim</p>
-          <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
-            data-nome="Buquê prêmio de rosas clássico"
-            data-preco="186,50">
-            🛒 Adicionar
-          </button>
+
+      <div class="card"
+           data-title="Buquê de 7/rosas"
+           data-desc="18 rosas, 3 lírios, 18 bom bom, 2 borboletas metálicas, papel coreano, led, laço de cetim">
+        <div class="card-title">Buquê de 7/rosas</div>
+        <div class="card-body">
+          <img src="./img/22.jpeg" alt="Buquê de 7/rosas" />
+          <div class="card-desc">
+            <p>18 rosas<br>+ 3 lírios<br>+ 18 bom bom<br>+ 2 borboletas metálicas<br>+ 1 papel coreano<br>+ 1 laço de cetim</p>
+            <span class="preco">Valor: R$ 56,50</span>
+            <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
+              data-nome="Buquê de 7/rosas"
+              data-preco="56,50">
+              🛒 Adicionar
+            </button>
+          </div>
         </div>
       </div>
-    </div>
- 
-    <!-- PRODUTO 8 -->
-    <div class="card"
-         data-title="Buquê de borboleta led azul"
-         data-desc="30 borboletas, led, papel coreano, borda azul claro, laço de cetim">
-      <div class="card-title">Buquê de borboleta</div>
-      <div class="card-body">
-        <img src="./img/9.jpg" alt="Buquê de borboleta" />
-        <div class="card-desc">
-          <h3>Valor: R$ 50,30</h3>
-          <p>30 borboletas<br>borda azul claro<br>+ led<br>+ 1 papel coreano<br>+ 1 laço de cetim</p>
-          <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
-            data-nome="Buquê de borboleta"
-            data-preco="50,30">
-            🛒 Adicionar
-          </button>
+
+      <div class="card"
+           data-title="Buquê de 22/rosas vermelhas"
+           data-desc="18 rosas, 3 lírios, 18 bom bom, 2 borboletas metálicas, papel coreano, led, laço de cetim">
+        <div class="card-title">Buquê de 22/rosas vermelhas</div>
+        <div class="card-body">
+          <img src="./img/16.jpeg"alt="Buquê de 22/rosas vermelhas" />
+          <div class="card-desc">
+            <p>18 rosas<br>+ 3 lírios<br>+ 18 bom bom<br>+ 2 borboletas metálicas<br>+ 1 papel coreano<br>+ 1 laço de cetim</p>
+            <span class="preco">Valor: R$ 186,50</span>
+            <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
+              data-nome="Buquê de 22/rosas vermelhas"
+              data-preco="186,50">
+              🛒 Adicionar
+            </button>
+          </div>
         </div>
       </div>
-    </div>
- 
-    <!-- PRODUTO 9 -->
-    <div class="card"
-         data-title="Buquê do Homem Aranha com pelúcia"
-         data-desc="15 rosas com glitter, pelúcia do Homem Aranha, papel coreano, laço de cetim">
-      <div class="card-title">Buquê do Homem Aranha</div>
-      <div class="card-body">
-        <img src="./img/10.jpg" alt="Buquê do Homem Aranha" />
-        <div class="card-desc">
-          <h3>Valor: R$ 140,00</h3>
-          <p>15 flores com glitter<br>+ 1 pelúcia do Homem Aranha<br>+ papel ceda<br>+ 1 papel coreano<br>+ 1 laço de cetim</p>
-          <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
-            data-nome="Buquê do Homem Aranha"
-            data-preco="140,00">
-            🛒 Adicionar
-          </button>
+
+      <div class="card"
+           data-title="Buquê de borboleta"
+           data-desc="30 borboletas, led, papel coreano, borda azul claro, laço de cetim">
+        <div class="card-title">Buquê de borboleta</div>
+        <div class="card-body">
+          <img src="./img/9.jpg" alt="Buquê de borboleta" />
+          <div class="card-desc">
+            <p>30 borboletas<br>borda azul claro<br>+ led<br>+ 1 papel coreano<br>+ 1 laço de cetim</p>
+            <span class="preco">Valor: R$ 66,20</span>
+            <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
+              data-nome="Buquê de borboleta"
+              data-preco="66,20">
+              🛒 Adicionar
+            </button>
+          </div>
         </div>
       </div>
+
+      <div id="noResults" class="no-results">Nenhum buquê encontrado 😢</div>
     </div>
- 
-    <!-- PRODUTO 10 -->
-    <div class="card"
-         data-title="Buquê do money dinheiro falso"
-         data-desc="4 rosas, dinheiro falso, papel coreano, laço de cetim">
-      <div class="card-title">Buquê do Money</div>
-      <div class="card-body">
-        <img src="./img/11.jpg" alt="Buquê do Money" />
-        <div class="card-desc">
-          <h3>Valor: R$ 28,60</h3>
-          <p>4 flores<br>+ dinheiro (falso)<br>+ 1 papel coreano<br>+ 1 laço de cetim</p>
-          <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
-            data-nome="Buquê do Money"
-            data-preco="28,60">
-            🛒 Adicionar
-          </button>
-        </div>
-      </div>
-    </div>
- 
-    <!-- PRODUTO 11 -->
-    <div class="card"
-         data-title="Buquê de flores vermelhas 21 rosas glitter"
-         data-desc="21 rosas com glitter, papel coreano, laço de cetim">
-      <div class="card-title">Buquê de flores vermelhas</div>
-      <div class="card-body">
-        <img src="./img/12.jpg" alt="Buquê de flores vermelhas" />
-        <div class="card-desc">
-          <h3>Valor: R$ 125,00</h3>
-          <p>21 flores com glitter<br>+ 1 papel coreano<br>+ 1 laço de cetim</p>
-          <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
-            data-nome="Buquê de flores vermelhas"
-            data-preco="125,00">
-            🛒 Adicionar
-          </button>
-        </div>
-      </div>
-    </div>
- 
-    <!-- PRODUTO 12 -->
-    <div class="card"
-         data-title="Buquê de flores mistas com glitter e led sempre viva"
-         data-desc="11 rosas com glitter, sempre viva, led, papel coreano, laço de cetim">
-      <div class="card-title">Buquê de flores mistas com glitter</div>
-      <div class="card-body">
-        <img src="./img/13.jpg" alt="Buquê de flores mistas com glitter" />
-        <div class="card-desc">
-          <h3>Valor: R$ 79,70</h3>
-          <p>11 flores com glitter<br>+ sempre viva<br>+ led<br>+ 1 papel coreano<br>+ 1 laço de cetim</p>
-          <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
-            data-nome="Buquê de flores mistas com glitter"
-            data-preco="79,70">
-            🛒 Adicionar
-          </button>
-        </div>
-      </div>
-    </div>
- 
-    <!-- Mensagem sem resultados -->
-    <div id="noResults" class="no-results">Nenhum buquê encontrado 😢</div>
- 
+    <button class="seta seta-dir" onclick="moverCarrossel('buques', 1)">&#8594;</button>
   </div>
- 
+
+  <!-- BUQUÊS COM GLITTER -->
+  <h2 class="galeria-title">✨ Buquês com Glitter</h2>
+  <div class="carrossel-wrap" id="wrap-glitter">
+    <button class="seta seta-esq" onclick="moverCarrossel('glitter', -1)">&#8592;</button>
+    <div class="carrossel" id="galeria-glitter">
+      <div class="card"
+           data-title="Buquê de 30/rosas vermelhas"
+           data-desc="30 rosas com glitter, papel coreano, laço de cetim">
+        <div class="card-title">Buquê de 30/rosas vermelhas</div>
+        <div class="card-body">
+          <img src="./img/12.jpg" alt="Buquê de 30/rosas vermelhas" />
+          <div class="card-desc">
+            <p>30 rosas com glitter<br>+ 1 papel coreano<br>+ 1 laço de cetim</p>
+            <span class="preco">Valor: R$ 162,17</span>
+            <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
+              data-nome="Buquê de 30/rosas vermelhas"
+              data-preco="162,17">
+              🛒 Adicionar
+            </button>
+          </div>
+        </div>
+      </div>
+       <div class="card"
+           data-title="Buquê de 60/rosas roxas com glitter"
+           data-desc="60 rosas com glitter, sempre viva, led, papel coreano, laço de cetim">
+        <div class="card-title">Buquê de 60/rosas roxas com glitter</div>
+        <div class="card-body">
+          <img src="./img/13.jpg" alt="Buquê de 60/rosas roxas com glitter" />
+          <div class="card-desc">
+            <p>60 rosas com glitter<br>+ sempre viva<br>+ led<br>+ 1 papel coreano<br>+ 1 laço de cetim</p>
+            <span class="preco">Valor: R$ 184,17</span>
+            <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
+              data-nome="Buquê de 60/rosas roxas com glitter"
+              data-preco="184,17">
+              🛒 Adicionar
+            </button>
+          </div>
+        </div>
+      </div>
+             <div class="card"
+           data-title="Buquê de rosas vermelhas com glitter/ ouro branco"
+           data-desc="11 rosas com glitter, sempre viva, led, papel coreano, laço de cetim">
+        <div class="card-title">Buquê de rosas vermelhas com glitter/ ouro branco</div>
+        <div class="card-body">
+          <img src="./img/19.jpeg" alt="Buquê de rosas vermelhas com glitter/ ouro branco" />
+          <div class="card-desc">
+            <p>11 flores com glitter<br>+ sempre viva<br>+ led<br>+ 1 papel coreano<br>+ 1 laço de cetim</p>
+            <span class="preco">Valor: R$ 237,07</span>
+            <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
+              data-nome="Buquê de rosas vermelhas com glitter/ ouro branco"
+              data-preco="237,07">
+              🛒 Adicionar
+            </button>
+          </div>
+        </div>
+      </div>
+                   <div class="card"
+           data-title="Buquê de flores mistas com glitter e led sempre viva"
+           data-desc="11 rosas com glitter, sempre viva, led, papel coreano, laço de cetim">
+        <div class="card-title">Buquê de flores mistas com glitter</div>
+        <div class="card-body">
+          <img src="./img/15.jpeg" alt="Buquê de flores mistas com glitter" />
+          <div class="card-desc">
+            <p>11 flores com glitter<br>+ sempre viva<br>+ led<br>+ 1 papel coreano<br>+ 1 laço de cetim</p>
+            <span class="preco">Valor: R$ 79,70</span>
+            <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
+              data-nome="Buquê de flores mistas com glitter"
+              data-preco="79,70">
+              🛒 Adicionar
+            </button>
+          </div>
+        </div>
+      </div>
+            <div class="card"
+           data-title="Buquê simples de rosas vermelhas com glitter"
+           data-desc="7 rosas com glitter, papel coreano, laço de cetim">
+        <div class="card-title">Buquê simples de rosas vermelhas com glitter</div>
+        <div class="card-body">
+          <img src="./img/7.jpeg" alt="Buquê simples de rosas vermelhas" />
+          <div class="card-desc">
+            <p>7 rosas c/ glitter<br>+ 1 papel coreano<br>+ 1 laço de cetim</p>
+            <span class="preco">Valor: R$ 77,00</span>
+            <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
+              data-nome="Buquê simples de rosas vermelhas com glitter"
+              data-preco="77,00">
+              🛒 Adicionar
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <button class="seta seta-dir" onclick="moverCarrossel('glitter', 1)">&#8594;</button>
+  </div>
+
+  <!-- BUQUÊS PERSONALIZADOS -->
+  <h2 class="galeria-title">🎨 Buquês Personalizados</h2>
+  <div class="carrossel-wrap" id="wrap-personalizados">
+    <button class="seta seta-esq" onclick="moverCarrossel('personalizados', -1)">&#8592;</button>
+    <div class="carrossel" id="galeria-personalizados">
+
+      <div class="card"
+           data-title="Buquê simples de flores vermelhas com glitter"
+           data-desc="7 rosas com glitter, papel coreano, laço de cetim">
+        <div class="card-title">Buquê stith</div>
+        <div class="card-body">
+          <img src="./img/4.jpg" alt="Buquê simples de flores vermelhas" />
+          <div class="card-desc">
+            <p>7 rosas c/ glitter<br>+ 1 papel coreano<br>+ 1 laço de cetim</p>
+            <span class="preco">Valor: R$ 209,30</span>
+            <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
+              data-nome="Buquê simples de flores vermelhas"
+              data-preco="209,30">
+              🛒 Adicionar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card"
+           data-title="Buquê do corinthians"
+           data-desc="7 rosas com glitter, papel coreano, laço de cetim">
+        <div class="card-title"> Buquê do corinthians </div>
+        <div class="card-body">
+          <img src="./img/6.jpg" alt="Buquê simples de flores vermelhas" />
+          <div class="card-desc">
+            <p>7 rosas c/ glitter<br>+ 1 papel coreano<br>+ 1 laço de cetim</p>
+            <span class="preco">Valor: R$ 84,58</span>
+            <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
+              data-nome="Buquê do corinthians"
+              data-preco="84,58">
+              🛒 Adicionar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card"
+           data-title="Buquê simples de flores vermelhas com glitter"
+           data-desc="7 rosas com glitter, papel coreano, laço de cetim">
+        <div class="card-title">Buquê simples de flores vermelhas</div>
+        <div class="card-body">
+          <img src="./img/14.jpeg" alt="Buquê simples de flores vermelhas" />
+          <div class="card-desc">
+            <p>7 rosas c/ glitter<br>+ 1 papel coreano<br>+ 1 laço de cetim</p>
+            <span class="preco">Valor: R$ 77,00</span>
+            <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
+              data-nome="Buquê simples de flores vermelhas"
+              data-preco="77,00">
+              🛒 Adicionar
+            </button>
+          </div>
+        </div>
+      </div>
+
+       <div class="card"
+           data-title="Buquê de princesa"
+           data-desc="7 rosas com glitter, papel coreano, laço de cetim">
+        <div class="card-title">Buquê de princesa</div>
+        <div class="card-body">
+          <img src="./img/20.jpeg" alt="Buquê simples de flores vermelhas" />
+          <div class="card-desc">
+            <p>7 rosas c/ glitter<br>+ 1 papel coreano<br>+ 1 laço de cetim</p>
+            <span class="preco">Valor: R$ 60,00</span>
+            <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
+              data-nome="Buquê de princesa"
+              data-preco="60,00">
+              🛒 Adicionar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card"
+           data-title="Buquê de girassois"
+           data-desc="7 rosas com glitter, papel coreano, laço de cetim">
+        <div class="card-title">Buquê de girassois</div>
+        <div class="card-body">
+          <img src="./img/18.jpeg" alt="Buquê simples de flores vermelhas" />
+          <div class="card-desc">
+            <p>7 rosas c/ glitter<br>+ 1 papel coreano<br>+ 1 laço de cetim</p>
+            <span class="preco">Valor: R$ 53,34</span>
+            <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
+              data-nome="Buquê de girassois"
+              data-preco="53,34">
+              🛒 Adicionar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card"
+           data-title="Buquê homem aranha"
+           data-desc="papel coreano, laço de cetim">
+        <div class="card-title">Buquê homem aranha</div>
+        <div class="card-body">
+          <img src="./img/10.jpg" alt="Buquê simples de flores vermelhas" />
+          <div class="card-desc">
+            <p><br>+ 1 papel coreano<br>+ 1 laço de cetim</p>
+            <span class="preco">Valor: R$ 176,00</span>
+            <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
+              data-nome="Buquê homem aranha"
+              data-preco="176,00">
+              🛒 Adicionar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card"
+           data-title="Buquê money"
+           data-desc="7 rosas com glitter, papel coreano, laço de cetim">
+        <div class="card-title">Buquê money</div>
+        <div class="card-body">
+          <img src="./img/11.jpg" alt="Buquê money" />
+          <div class="card-desc">
+            <p>7 rosas c/ glitter<br>+ 1 papel coreano<br>+ 1 laço de cetim</p>
+            <span class="preco">Valor: R$ 77,00</span>
+            <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
+              data-nome="Buquê money"
+              data-preco="77,00">
+              🛒 Adicionar
+            </button>
+          </div>
+        </div>
+      </div>
+       <div class="card"
+           data-title="Buquê de princesa"
+           data-desc="7 rosas com glitter, papel coreano, laço de cetim">
+        <div class="card-title">Buquê de princesa</div>
+        <div class="card-body">
+          <img src="./img/23.jpeg" alt="Buquê de princesa" />
+          <div class="card-desc">
+            <p>7 rosas c/ glitter<br>+ 1 papel coreano<br>+ 1 laço de cetim</p>
+            <span class="preco">Valor: R$ 168,17</span>
+            <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
+              data-nome="Buquê de princesa"
+              data-preco="168,17">
+              🛒 Adicionar
+            </button>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+    <button class="seta seta-dir" onclick="moverCarrossel('personalizados', 1)">&#8594;</button>
+  </div>
   <!-- CESTAS -->
   <h2 class="galeria-title">🎁 Cestas Personalizadas</h2>
   <div class="banner-cesta" id="galeria-cestas">
- 
-    <div class="card-cesta"
-         data-title="Cesta personalizada de coração com pelúcia e chocolates"
-         data-desc="cesta coração pelúcia Kinder Bueno Kit Kat Nutella Raffaello Snickers bolo de pote chocolate">
-      <h2>Cesta Especial</h2>
-      <div class="card-body-cesta">
-        <img src="./img/cesta1.jpeg" alt="Cesta Especial">
-        <div class="card-desc-cesta">
-          <h3>Valor: R$ 200,00</h3>
-          <p>Cesta de coração<br>+ pelúcia<br>+ 2 Kinder Bueno<br>+ 7 barras Kit Kat<br>+ 2 Kit Kat normal<br>+ 2 barrinhas de Nutella<br>+ 12 Raffaello<br>+ 1 bolo de pote<br>+ 3 Snickers<br>+ 4 barras de chocolate</p>
-          <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
-            data-nome="Cesta Especial com pelúcia e chocolates"
-            data-preco="200,00">
-            🛒 Adicionar
-          </button>
+
+      <div class="card-cesta"
+           data-title="Cesta personalizada de coração com pelúcia e chocolates"
+           data-desc="cesta coração pelúcia Kinder Bueno Kit Kat Nutella Raffaello Snickers bolo de pote chocolate">
+        <h2>Cesta Especial</h2>
+        <div class="card-body-cesta">
+          <img src="./img/cesta1.jpeg" alt="Cesta Especial">
+          <div class="card-desc-cesta">
+            <p>Cesta de coração<br>+ pelúcia<br>+ 2 Kinder Bueno<br>+ 7 barras Kit Kat<br>+ 2 Kit Kat normal<br>+ 2 barrinhas de Nutella<br>+ 12 Raffaello<br>+ 1 bolo de pote<br>+ 3 Snickers<br>+ 4 barras de chocolate</p>
+            <span class="preco">Valor: R$ 200,00</span>
+            <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
+              data-nome="Cesta Especial com pelúcia e chocolates"
+              data-preco="200,00">
+              🛒 Adicionar
+            </button>
+          </div>
         </div>
       </div>
-    </div>
- 
-    <div class="card-cesta"
-         data-title="Cesta tradicional com chocolates variados"
-         data-desc="cesta tradicional Ruffles Biz Suflair Kit Kat Lacta Ouro Branco Sonho de Valsa chocolate">
-      <h2>Cesta Tradicional</h2>
-      <div class="card-body-cesta">
-        <img src="./img/cesta2.jpeg" alt="Cesta Tradicional">
-        <div class="card-desc-cesta">
-          <h3>Valor: R$ 160,00</h3>
-          <p>Cesta tradicional<br>+ 1 Ruffles<br>+ 1 caixa Biz<br>+ 1 barra Biz<br>+ 1 Suflair<br>+ 11 caixas Lacta<br>+ 1 Ouro Branco<br>+ 1 Sonho de Valsa<br>+ 2 Kit Kat</p>
-          <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
-            data-nome="Cesta Tradicional com chocolates"
-            data-preco="160,00">
-            🛒 Adicionar
-          </button>
+
+      <div class="card-cesta"
+           data-title="Cesta tradicional com chocolates variados"
+           data-desc="cesta tradicional Ruffles Biz Suflair Kit Kat Lacta Ouro Branco Sonho de Valsa chocolate">
+        <h2>Cesta Tradicional</h2>
+        <div class="card-body-cesta">
+          <img src="./img/cesta2.jpeg" alt="Cesta Tradicional">
+          <div class="card-desc-cesta">
+            <p>Cesta tradicional<br>+ 1 Ruffles<br>+ 1 caixa Biz<br>+ 1 barra Biz<br>+ 1 Suflair<br>+ 11 caixas Lacta<br>+ 1 Ouro Branco<br>+ 1 Sonho de Valsa<br>+ 2 Kit Kat</p>
+            <span class="preco">Valor: R$ 160,00</span>
+            <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
+              data-nome="Cesta Tradicional com chocolates"
+              data-preco="160,00">
+              🛒 Adicionar
+            </button>
+          </div>
         </div>
       </div>
-    </div>
- 
-    <div id="noResultsCestas" class="no-results">Nenhuma cesta encontrada 😢</div>
- 
+
+      <div id="noResultsCestas" class="no-results">Nenhuma cesta encontrada 😢</div>
   </div>
- 
+
   <footer>
     © 2025 Studio Moreira — Buquês e Cestas Personalizados com Amor 🌸
   </footer>
- 
+
+  <div id="lightbox" onclick="fecharLightbox()">
+    <span id="lightbox-fechar">✕</span>
+    <img id="lightbox-img" src="" alt="">
+  </div>
+
   <script src="scripts.js" defer></script>
- 
+
 </body>
 </html>
