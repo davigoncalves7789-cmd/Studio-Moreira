@@ -41,8 +41,12 @@ const idCarrossel = {
   personalizados:'galeria-personalizados',
 };
 
+function isMobile() {
+  return window.innerWidth <= 750;
+}
+
 function cardsVisiveis(nome) {
-  return window.innerWidth <= 700 ? 2 : 4;
+  return isMobile() ? 1 : 4;
 }
 
 function cardsAtivos(nome) {
@@ -62,17 +66,23 @@ function moverCarrossel(nome, direcao) {
 
 function renderCarrossel(nome) {
   const estado = estadoCarrossel[nome];
-  const visiveis = cardsVisiveis(nome);
   const ativos = cardsAtivos(nome);
-  const inicio = estado.pagina * visiveis;
 
-  ativos.forEach((card, i) => {
-    card.style.display = (i >= inicio && i < inicio + visiveis) ? '' : 'none';
-  });
+  if (isMobile()) {
+    // No mobile todos os cards ficam visíveis — o scroll snap cuida da navegação
+    ativos.forEach(card => { card.style.display = ''; });
+  } else {
+    const visiveis = cardsVisiveis(nome);
+    const inicio = estado.pagina * visiveis;
+    ativos.forEach((card, i) => {
+      card.style.display = (i >= inicio && i < inicio + visiveis) ? '' : 'none';
+    });
+  }
 
   const wrap = document.getElementById('wrap-' + nome);
   if (!wrap) return;
   const [sEsq, sDir] = wrap.querySelectorAll('.seta');
+  const visiveis = cardsVisiveis(nome);
   const maxPagina = Math.max(0, Math.ceil(ativos.length / visiveis) - 1);
   sEsq.disabled = estado.pagina === 0;
   sDir.disabled = estado.pagina >= maxPagina;

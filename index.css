@@ -122,31 +122,34 @@ body {
 
     /* ── Carrossel ── */
     .carrossel-wrap {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 0 8px 48px;
+      position: relative;
+      padding: 0 48px 48px;   /* espaço lateral reservado para as setas */
       max-width: 100%;
       margin: 0 auto;
       box-sizing: border-box;
+      /* sem overflow:hidden — as setas vivem no padding lateral */
     }
 
     .carrossel {
       display: flex;
       gap: 20px;
-      overflow: hidden;
-      flex: 1;
+      overflow: hidden;        /* só o carrossel esconde o overflow, não o wrap */
+      width: 100%;
       min-width: 0;
+      box-sizing: border-box;
     }
 
     .seta {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-60%);
       background: deeppink;
       color: white;
       border: none;
       border-radius: 50%;
-      width: 44px;
-      height: 44px;
-      font-size: 20px;
+      width: 36px;
+      height: 36px;
+      font-size: 18px;
       cursor: pointer;
       flex-shrink: 0;
       display: flex;
@@ -154,7 +157,10 @@ body {
       justify-content: center;
       box-shadow: 0 3px 10px rgba(0,0,0,.2);
       transition: opacity .2s;
+      z-index: 10;
     }
+    .seta-esq { left: 6px; }
+    .seta-dir { right: 6px; }
     .seta:hover { opacity: .8; }
     .seta:disabled { opacity: .3; cursor: default; }
 
@@ -480,113 +486,112 @@ body {
       border-top: 1px solid #e8d0d0;
     }
 
-    @media (max-width: 700px) {
+    @media (max-width: 750px) {
 
+      /* ── Header maior e mais legível ── */
       header {
-        padding: 12px 12px 10px;
-        gap: 10px;
+        padding: 14px 14px 12px;
+        gap: 12px;
       }
 
       .header-top {
         display: grid;
         grid-template-columns: auto 1fr auto;
         align-items: center;
-        gap: 8px;
+        gap: 10px;
       }
 
-      .logo          { grid-column: 1; grid-row: 1; }
-      .logo img      { width: 52px; height: 52px; }
+      .logo         { grid-column: 1; grid-row: 1; }
+      .logo img     { width: 62px; height: 62px; }
 
-      .brand-center  { grid-column: 2; grid-row: 1; text-align: center; min-width: 0; }
-      .brand-title   { font-size: 16px; }
-      .brand-subtitle{ font-size: 11px; }
+      .brand-center { grid-column: 2; grid-row: 1; text-align: center; min-width: 0; }
+      .brand-title  { font-size: 18px; }
+      .brand-subtitle { font-size: 12px; }
 
       .header-banner {
         grid-column: 3;
         grid-row: 1;
         flex-direction: column;
         align-items: flex-end;
-        gap: 4px;
+        gap: 6px;
       }
-
       .header-banner > img { display: none; }
 
-      .links a         { font-size: 12px; }
-      .links a.whatsapp{ font-size: 11px; }
+      /* Links maiores — mais fáceis de tocar */
+      .links { gap: 6px; }
+      .links a         { font-size: 15px; }
+      .links a.whatsapp{ font-size: 13px; }
 
-      .search-wrap { margin-top: 6px; }
-      .search-wrap input { font-size: 13px; padding: 8px 14px; }
+      .search-wrap { margin-top: 8px; }
+      .search-wrap input { font-size: 14px; padding: 10px 16px; }
 
-      .card { flex: 0 0 calc(50% - 12px); border-radius: 10px; }
-
-      .card-title {
-        font-size: 11px;
-        padding: 8px 6px 6px;
+      /* ── Carrossel vira scroll touch ── */
+      .carrossel-wrap {
+        padding: 0 0 24px;   /* remove padding lateral — scroll vai até a borda */
       }
+
+      .carrossel {
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        gap: 12px;
+        padding: 0 16px 10px; /* respiro nas bordas */
+        scrollbar-width: none;
+      }
+      .carrossel::-webkit-scrollbar { display: none; }
+
+      /* Cada card ocupa ~31% — mostra 3 cards com peek do próximo */
+      .card {
+        flex: 0 0 31%;
+        scroll-snap-align: start;
+        border-radius: 14px;
+        display: flex !important;
+      }
+
+      /* Esconde as setas no mobile */
+      .seta { display: none; }
+
+      /* Hint de swipe */
+      .swipe-hint {
+        display: block;
+        text-align: center;
+        font-size: 12px;
+        color: #bbb;
+        margin: -16px 0 8px;
+      }
+
+      /* Cards normais */
+      .card-title { font-size: 10px; padding: 6px 4px 4px; }
 
       .card-body {
         flex-direction: column;
         align-items: center;
-        gap: 6px;
-        padding: 6px;
-        margin-left: 0;
-      }
-      .card-body img {
-        width: 100%;
-        height: 110px;
-        border-radius: 10px;
-        object-fit: cover;
-      }
-      .card-desc {
-        max-width: 100%;
-        width: 100%;
-        padding: 6px;
-        font-size: 11px;
-        line-height: 1.5;
-        margin: 0 0 6px;
         gap: 4px;
-      }
-      .btn-adicionar { font-size: 11px; padding: 5px 10px; margin-top: 4px; }
-
-      .card-cesta {
-        width: 100%;
-        padding: 10px;
-        border-radius: 14px;
-      }
-      .card-cesta h2 {
-        font-size: 14px;
-        margin-bottom: 8px;
-      }
-      .card-body-cesta {
-        flex-direction: row;
-        align-items: flex-start;
-        gap: 10px;
-      }
-      .card-body-cesta img {
-        width: 12rem;
-        height: 15rem;
-        object-fit: cover;
-        border-radius: 10px;
-        flex-shrink: 0;
-      }
-      .card-desc-cesta {
+        padding: 4px;
         margin-left: 0;
-        font-size: 9px;
-        border-radius: 10px;
-        flex: 1;
-        padding: 8px;
-        box-sizing: border-box;
       }
-      .card-desc-cesta h3 {
-        font-size: 12px;
-        margin-bottom: 4px;
-      }
+      .card-body img { width: 100%; height: 100px; border-radius: 8px; object-fit: cover; }
+      .card-desc { max-width: 100%; width: 100%; padding: 4px; font-size: 9px; line-height: 1.4; margin: 0 0 4px; gap: 2px; }
+      .card-desc .preco { font-size: 11px; }
+      .btn-adicionar { font-size: 10px; padding: 5px 8px; margin-top: 3px; }
+
+      /* Cestas */
+      .card-cesta { width: 100%; padding: 12px; border-radius: 14px; }
+      .card-cesta h2 { font-size: 15px; margin-bottom: 10px; }
+      .card-body-cesta { flex-direction: row; align-items: flex-start; gap: 10px; }
+      .card-body-cesta img { width: 11rem; height: 14rem; object-fit: cover; border-radius: 10px; flex-shrink: 0; }
+      .card-desc-cesta { margin-left: 0; font-size: 11px; border-radius: 10px; flex: 1; padding: 8px; box-sizing: border-box; }
+      .card-desc-cesta h3 { font-size: 13px; margin-bottom: 6px; }
 
       #carrinho-icone { font-size: 13px; padding: 9px 13px; bottom: 16px; right: 16px; }
       #carrinho-painel { width: calc(100vw - 32px); right: 16px; bottom: 60px; }
       #info-icone { font-size: 13px; padding: 9px 13px; bottom: 16px; left: 16px; }
       #info-painel { width: calc(100vw - 32px); left: 16px; bottom: 60px; }
     }
+
+    /* Hint de swipe — só aparece no mobile via JS */
+    .swipe-hint { display: none; }
 .card,
 .card-cesta {
   opacity: 0;
