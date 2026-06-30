@@ -1,4 +1,4 @@
-// ── Lightbox ────────────────────────────────────────────
+
 function abrirLightbox(src, alt) {
   const lb = document.getElementById('lightbox');
   document.getElementById('lightbox-img').src = src;
@@ -18,7 +18,6 @@ document.getElementById('lightbox-img').addEventListener('click', e => {
   e.stopPropagation();
 });
 
-// ── Info ────────────────────────────────────────────────
 function abrirInfo() {
   const painel = document.getElementById('info-painel');
   painel.style.display = painel.style.display === 'block' ? 'none' : 'block';
@@ -28,7 +27,95 @@ function fecharInfo() {
   document.getElementById('info-painel').style.display = 'none';
 }
 
-// ── Carrossel ───────────────────────────────────────────
+function escapeAttr(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+function montarItensHtml(itens) {
+  return itens.map((item, i) => (i === 0 ? item : '+ ' + item)).join('<br>');
+}
+
+function criarCardHtml(p) {
+  return `
+    <div class="card"
+         data-title="${escapeAttr(p.nomeBusca)}"
+         data-desc="${escapeAttr(p.descBusca)}">
+      <div class="card-title">${p.nomeExibicao}</div>
+      <div class="card-body">
+        <img src="${p.imagem}" alt="${escapeAttr(p.imagemAlt)}" />
+        <div class="card-desc">
+          <p>${montarItensHtml(p.itens)}</p>
+          <span class="preco">Valor: R$ ${p.preco}</span>
+          <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
+            data-nome="${escapeAttr(p.nomeCarrinho)}"
+            data-preco="${p.preco}">
+            🛒 Adicionar
+          </button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function criarCardCestaHtml(p) {
+  return `
+    <div class="card-cesta"
+         data-title="${escapeAttr(p.nomeBusca)}"
+         data-desc="${escapeAttr(p.descBusca)}">
+      <h2>${p.nomeExibicao}</h2>
+      <div class="card-body-cesta">
+        <img src="${p.imagem}" alt="${escapeAttr(p.imagemAlt)}">
+        <div class="card-desc-cesta">
+          <p>${montarItensHtml(p.itens)}</p>
+          <span class="preco">Valor: R$ ${p.preco}</span>
+          <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
+            data-nome="${escapeAttr(p.nomeCarrinho)}"
+            data-preco="${p.preco}">
+            🛒 Adicionar
+          </button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderizarProdutos(produtos) {
+  const containers = {
+    buques: document.getElementById('galeria'),
+    glitter: document.getElementById('galeria-glitter'),
+    personalizados: document.getElementById('galeria-personalizados'),
+    cestas: document.getElementById('galeria-cestas'),
+  };
+
+  produtos.forEach(p => {
+    const container = containers[p.categoria];
+    if (!container) {
+      console.warn('Categoria desconhecida no produtos.json:', p.categoria, p);
+      return;
+    }
+    const html = p.categoria === 'cestas' ? criarCardCestaHtml(p) : criarCardHtml(p);
+    const sentinela = container.querySelector('.no-results');
+    if (sentinela) {
+      sentinela.insertAdjacentHTML('beforebegin', html);
+    } else {
+      container.insertAdjacentHTML('beforeend', html);
+    }
+  });
+}
+
+async function carregarProdutos() {
+  try {
+    const resp = await fetch('produtos.json');
+    if (!resp.ok) throw new Error(`Falha ao carregar produtos.json (status ${resp.status})`);
+    const produtos = await resp.json();
+    renderizarProdutos(produtos);
+  } catch (err) {
+    console.error('Erro ao carregar produtos:', err);
+  }
+}
+
 const estadoCarrossel = {
   buques:        { pagina: 0 },
   glitter:       { pagina: 0 },
@@ -69,7 +156,6 @@ function renderCarrossel(nome) {
   const ativos = cardsAtivos(nome);
 
   if (isMobile()) {
-    // No mobile todos os cards ficam visíveis — o scroll snap cuida da navegação
     ativos.forEach(card => { card.style.display = ''; });
   } else {
     const visiveis = cardsVisiveis(nome);
@@ -94,7 +180,6 @@ function renderTodos() {
   renderCarrossel('personalizados');
 }
 
-// ── Busca ──────────────────────────────────────────────
 const input           = document.getElementById('searchInput');
 const noResults       = document.getElementById('noResults');
 const noResultsCestas = document.getElementById('noResultsCestas');
@@ -139,13 +224,36 @@ input.addEventListener('input', () => {
   renderTodos();
 });
 
-// ── Carrinho ────────────────────────────────────────────
-let carrinho = [];
+const CARRINHO_STORAGE_KEY = 'studio-moreira:carrinho';
+
+function carregarCarrinhoSalvo() {
+  try {
+    const salvo = localStorage.getItem(CARRINHO_STORAGE_KEY);
+    if (!salvo) return [];
+    const dados = JSON.parse(salvo);
+    if (!Array.isArray(dados)) return [];
+    return dados.filter(item => item && typeof item.nome === 'string' && typeof item.preco === 'string');
+  } catch (err) {
+    console.warn('Não foi possível ler o carrinho salvo, iniciando vazio:', err);
+    return [];
+  }
+}
+
+function salvarCarrinho() {
+  try {
+    localStorage.setItem(CARRINHO_STORAGE_KEY, JSON.stringify(carrinho));
+  } catch (err) {
+    console.warn('Não foi possível salvar o carrinho:', err);
+  }
+}
+
+let carrinho = carregarCarrinhoSalvo();
 
 function adicionarCarrinho(btn) {
   const nome  = btn.dataset.nome;
   const preco = btn.dataset.preco;
   carrinho.push({ nome, preco });
+  salvarCarrinho();
   document.getElementById('carrinho-count').textContent = carrinho.length;
 
   const original = btn.innerHTML;
@@ -189,6 +297,7 @@ function atualizarCarrinho() {
 
 function removerItem(i) {
   carrinho.splice(i, 1);
+  salvarCarrinho();
   document.getElementById('carrinho-count').textContent = carrinho.length;
   atualizarCarrinho();
 }
@@ -205,9 +314,13 @@ function finalizarPedido() {
   mensagem += `%0ATotal: R$ ${total.toFixed(2).replace('.', ',')}`;
 
   window.open(`https://wa.me/5516993414588?text=${mensagem}`, '_blank');
+
+  carrinho = [];
+  salvarCarrinho();
+  document.getElementById('carrinho-count').textContent = carrinho.length;
+  atualizarCarrinho();
 }
 
-// ── Animação de entrada ─────────────────────────────────
 const observer = new IntersectionObserver((entries) => {
   entries.forEach((entry) => {
     if (entry.isIntersecting) {
@@ -217,13 +330,14 @@ const observer = new IntersectionObserver((entries) => {
   });
 }, { threshold: 0.1 });
 
-document.querySelectorAll('.card, .card-cesta').forEach(el => {
-  observer.observe(el);
-});
+window.addEventListener('load', async () => {
+  document.getElementById('carrinho-count').textContent = carrinho.length; 
+  await carregarProdutos();
+  renderTodos();              
 
-// ── Inicializar carrosseis ──────────────────────────────
-window.addEventListener('load', () => {
-  renderTodos();
+  document.querySelectorAll('.card, .card-cesta').forEach(el => {
+    observer.observe(el);
+  });
 
   document.querySelectorAll('.card img, .card-cesta img').forEach(img => {
     img.style.cursor = 'zoom-in';
