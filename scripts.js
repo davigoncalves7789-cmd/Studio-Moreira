@@ -52,7 +52,8 @@ function criarCardHtml(p) {
           <span class="preco">Valor: R$ ${p.preco}</span>
           <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
             data-nome="${escapeAttr(p.nomeCarrinho)}"
-            data-preco="${p.preco}">
+            data-preco="${p.preco}"
+            data-descricao="${escapeAttr(p.descBusca)}">
             🛒 Adicionar
           </button>
         </div>
@@ -73,7 +74,8 @@ function criarCardCestaHtml(p) {
           <span class="preco">Valor: R$ ${p.preco}</span>
           <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
             data-nome="${escapeAttr(p.nomeCarrinho)}"
-            data-preco="${p.preco}">
+            data-preco="${p.preco}"
+            data-descricao="${escapeAttr(p.descBusca)}">
             🛒 Adicionar
           </button>
         </div>
@@ -250,9 +252,10 @@ function salvarCarrinho() {
 let carrinho = carregarCarrinhoSalvo();
 
 function adicionarCarrinho(btn) {
-  const nome  = btn.dataset.nome;
-  const preco = btn.dataset.preco;
-  carrinho.push({ nome, preco });
+  const nome      = btn.dataset.nome;
+  const preco     = btn.dataset.preco;
+  const descricao = btn.dataset.descricao || '';
+  carrinho.push({ nome, preco, descricao });
   salvarCarrinho();
   document.getElementById('carrinho-count').textContent = carrinho.length;
 
@@ -305,15 +308,17 @@ function removerItem(i) {
 function finalizarPedido() {
   if (carrinho.length === 0) return alert('Seu carrinho está vazio!');
 
-  let mensagem = 'Olá! Gostaria de fazer um pedido:%0A%0A';
+  let mensagem = 'Olá! Gostaria de fazer um pedido:\n\n';
   carrinho.forEach(item => {
-    mensagem += `• ${item.nome} — R$ ${item.preco}%0A`;
+    mensagem += `• ${item.nome} — R$ ${item.preco}\n`;
+    if (item.descricao) mensagem += `  (${item.descricao})\n`;
+    mensagem += '\n';
   });
 
   const total = carrinho.reduce((s, i) => s + parseFloat(i.preco.replace(',', '.')), 0);
-  mensagem += `%0ATotal: R$ ${total.toFixed(2).replace('.', ',')}`;
+  mensagem += `Total: R$ ${total.toFixed(2).replace('.', ',')}`;
 
-  window.open(`https://wa.me/5516993414588?text=${mensagem}`, '_blank');
+  window.open(`https://wa.me/5516993414588?text=${encodeURIComponent(mensagem)}`, '_blank');
 
   carrinho = [];
   salvarCarrinho();
@@ -349,3 +354,4 @@ window.addEventListener('load', async () => {
 });
 
 window.addEventListener('resize', renderTodos);
+
