@@ -1,0 +1,205 @@
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #FBF6F3;
+  font-family: 'Inter', Arial, Helvetica, sans-serif;
+  color: #3a0e1c;
+}
+
+.oculto { display: none !important; }
+
+h1 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 600;
+  font-size: 28px;
+  margin: 0;
+  color: #3a0e1c;
+}
+
+.subtitulo {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1.4px;
+  color: #a58c92;
+  margin: 4px 0 0;
+}
+
+/* ── Tela de login ── */
+.tela-login {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.card-login {
+  background: #fff;
+  border-radius: 8px;
+  padding: 44px 36px;
+  width: 100%;
+  max-width: 360px;
+  box-shadow: 0 20px 50px rgba(58, 14, 28, .12);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  text-align: center;
+}
+
+.card-login .subtitulo { margin-bottom: 12px; }
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #6b5a5e;
+  text-align: left;
+}
+
+input, select, textarea {
+  font-family: 'Inter', Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  padding: 11px 13px;
+  border-radius: 4px;
+  border: 1px solid rgba(91, 15, 42, .18);
+  background: #fff;
+  color: #3a0e1c;
+  outline: none;
+  transition: border-color .2s ease;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: #5b0f2a;
+}
+textarea { resize: vertical; font-family: inherit; }
+
+button {
+  font-family: 'Inter', Arial, Helvetica, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 13px 20px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  background: #5b0f2a;
+  color: #fff;
+  transition: background .2s ease, transform .2s ease;
+}
+button:hover { background: #7a1638; transform: translateY(-1px); }
+button:disabled { background: #b7a2a7; cursor: default; transform: none; }
+
+.btn-secundario {
+  background: transparent;
+  color: #5b0f2a;
+  border: 1px solid rgba(91, 15, 42, .3);
+}
+.btn-secundario:hover { background: rgba(91, 15, 42, .06); }
+
+.mensagem-erro {
+  font-size: 12.5px;
+  color: #b3261e;
+  margin: 0;
+  min-height: 1px;
+}
+.mensagem-sucesso {
+  font-size: 12.5px;
+  color: #2f6b41;
+  margin: 0;
+  min-height: 1px;
+}
+
+/* ── Painel admin ── */
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 32px;
+  background: #fff;
+  border-bottom: 1px solid rgba(91, 15, 42, .1);
+}
+
+.admin-conteudo {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px 20px 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.painel-bloco {
+  background: #fff;
+  border-radius: 8px;
+  padding: 28px 26px;
+  box-shadow: 0 8px 24px rgba(58, 14, 28, .06);
+}
+
+.painel-bloco h2 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 600;
+  font-size: 22px;
+  margin: 0 0 18px;
+  color: #3a0e1c;
+}
+
+.form-produto {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 420px;
+}
+
+.preview-foto {
+  width: 140px;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid rgba(91, 15, 42, .15);
+}
+
+.lista-produtos {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.carregando { font-size: 13px; color: #a58c92; font-style: italic; }
+
+.produto-linha {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px;
+  border: 1px solid rgba(91, 15, 42, .1);
+  border-radius: 6px;
+}
+.produto-linha img {
+  width: 52px;
+  height: 52px;
+  object-fit: cover;
+  border-radius: 4px;
+  flex-shrink: 0;
+  background: #efe4e0;
+}
+.produto-linha .info { flex: 1; min-width: 0; }
+.produto-linha .nome { font-weight: 600; font-size: 13.5px; }
+.produto-linha .meta { font-size: 12px; color: #a58c92; }
+.produto-linha .btn-excluir {
+  background: transparent;
+  color: #b3261e;
+  border: 1px solid rgba(179, 38, 30, .3);
+  padding: 8px 14px;
+  font-size: 11px;
+}
+.produto-linha .btn-excluir:hover { background: rgba(179, 38, 30, .06); }
+
+@media (max-width: 600px) {
+  .admin-header { padding: 16px 18px; }
+  .admin-conteudo { padding: 22px 14px 60px; }
+  .painel-bloco { padding: 20px 16px; }
+}

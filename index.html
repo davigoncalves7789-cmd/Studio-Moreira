@@ -47,7 +47,11 @@
       ]
     }
     </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="index.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
 </head>
 <body>
 
@@ -74,6 +78,36 @@
     <p id="carrinho-total"></p>
     <button onclick="finalizarPedido()">💬 Finalizar pelo WhatsApp</button>
     <button onclick="fecharCarrinho()">Fechar</button>
+  </div>
+
+  <!-- MODAL DE PRODUTO (estilo Shopee) — ID próprio, independente do carrinho -->
+  <div id="produto-modal-overlay" class="produto-modal-overlay" onclick="fecharProdutoModal()">
+    <div class="produto-modal" onclick="event.stopPropagation()">
+      <span class="produto-modal-fechar" onclick="fecharProdutoModal()">✕</span>
+
+      <div class="produto-modal-img">
+        <img id="produto-modal-img" src="" alt="">
+      </div>
+
+      <div class="produto-modal-info">
+        <h2 id="produto-modal-titulo"></h2>
+
+        <div id="produto-modal-desc" class="produto-modal-desc"></div>
+
+        <div class="produto-modal-avaliacoes">
+          <h4>Avaliações</h4>
+          <p class="em-breve">Em breve você vai poder ver e deixar avaliações de clientes aqui.</p>
+        </div>
+
+        <div class="produto-modal-rodape">
+          <div class="produto-modal-rodape-preco">
+            <span class="rotulo">Valor</span>
+            <span class="produto-modal-preco" id="produto-modal-preco"></span>
+          </div>
+          <button class="btn-adicionar" id="produto-modal-btn-comprar">Adicionar ao carrinho</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <header>

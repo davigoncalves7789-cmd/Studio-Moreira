@@ -1,4 +1,13 @@
 
+// ── Conexão com o Supabase ─────────────────────────────────────────
+// Essa chave é "publishable" (antiga "anon public"): foi feita pra
+// ficar exposta no código do site. Quem protege o banco de verdade
+// são as regras de RLS configuradas lá no Supabase, não o sigilo
+// dessa chave.
+const SUPABASE_URL = 'https://padjfxslzjhgtqujdkbx.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_50YMqseOFR5Yma5AF1FCuQ_Y5xVaHBj';
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
 function abrirLightbox(src, alt) {
   const lb = document.getElementById('lightbox');
   document.getElementById('lightbox-img').src = src;
@@ -11,7 +20,10 @@ function fecharLightbox() {
 }
 
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') fecharLightbox();
+  if (e.key === 'Escape') {
+    fecharLightbox();
+    fecharProdutoModal();
+  }
 });
 
 document.getElementById('lightbox-img').addEventListener('click', e => {
@@ -39,6 +51,11 @@ function montarItensHtml(itens) {
   return itens.map((item, i) => (i === 0 ? item : '+ ' + item)).join('<br>');
 }
 
+// Guarda todos os produtos carregados do produtos.json, indexados por id,
+// pra alimentar o modal de produto sem precisar refazer fetch nem
+// recuperar dados a partir do DOM.
+let produtosCache = {};
+
 function criarCardHtml(p) {
   return `
     <div class="card"
@@ -46,7 +63,7 @@ function criarCardHtml(p) {
          data-desc="${escapeAttr(p.descBusca)}">
       <div class="card-title">${p.nomeExibicao}</div>
       <div class="card-body">
-        <img src="${p.imagem}" alt="${escapeAttr(p.imagemAlt)}" />
+        <img src="${p.imagem}" alt="${escapeAttr(p.imagemAlt)}" class="produto-clicavel" data-produto-id="${escapeAttr(p.id)}" />
         <div class="card-desc">
           <p>${montarItensHtml(p.itens)}</p>
           <span class="preco">Valor: R$ ${p.preco}</span>
@@ -68,7 +85,7 @@ function criarCardCestaHtml(p) {
          data-desc="${escapeAttr(p.descBusca)}">
       <h2>${p.nomeExibicao}</h2>
       <div class="card-body-cesta">
-        <img src="${p.imagem}" alt="${escapeAttr(p.imagemAlt)}">
+        <img src="${p.imagem}" alt="${escapeAttr(p.imagemAlt)}" class="produto-clicavel" data-produto-id="${escapeAttr(p.id)}">
         <div class="card-desc-cesta">
           <p>${montarItensHtml(p.itens)}</p>
           <span class="preco">Valor: R$ ${p.preco}</span>
@@ -97,6 +114,7 @@ function renderizarProdutos(produtos) {
       console.warn('Categoria desconhecida no produtos.json:', p.categoria, p);
       return;
     }
+    produtosCache[p.id] = p;
     const html = p.categoria === 'cestas' ? criarCardCestaHtml(p) : criarCardHtml(p);
     const sentinela = container.querySelector('.no-results');
     if (sentinela) {
@@ -107,16 +125,92 @@ function renderizarProdutos(produtos) {
   });
 }
 
+// Converte uma linha da tabela "produtos" do Supabase (nomes em
+// snake_case) pro mesmo formato que o resto do código já espera
+// (o mesmo shape do antigo produtos.json).
+function mapearProdutoDoBanco(row) {
+  return {
+    id: row.id,
+    categoria: row.categoria,
+    nomeExibicao: row.nome_exibicao,
+    nomeBusca: row.nome_busca,
+    descBusca: row.desc_busca,
+    nomeCarrinho: row.nome_carrinho,
+    imagem: row.imagem_url,
+    imagemAlt: row.imagem_alt,
+    itens: row.itens || [],
+    preco: row.preco,
+  };
+}
+
 async function carregarProdutos() {
   try {
-    const resp = await fetch('produtos.json');
-    if (!resp.ok) throw new Error(`Falha ao carregar produtos.json (status ${resp.status})`);
-    const produtos = await resp.json();
-    renderizarProdutos(produtos);
+    const { data, error } = await supabaseClient
+      .from('produtos')
+      .select('*')
+      .order('criado_em', { ascending: true });
+
+    if (error) throw error;
+    if (!data || data.length === 0) throw new Error('Nenhum produto retornado do banco');
+
+    renderizarProdutos(data.map(mapearProdutoDoBanco));
   } catch (err) {
-    console.error('Erro ao carregar produtos:', err);
+    // Se o Supabase estiver fora do ar, ou a chave/URL estiver errada,
+    // caímos de volta pro produtos.json local em vez de deixar a
+    // vitrine vazia — evita que um problema no banco tire o site do ar.
+    console.error('Erro ao carregar produtos do Supabase, usando produtos.json como backup:', err);
+    try {
+      const resp = await fetch('produtos.json');
+      if (!resp.ok) throw new Error(`Falha ao carregar produtos.json (status ${resp.status})`);
+      const produtos = await resp.json();
+      renderizarProdutos(produtos);
+    } catch (err2) {
+      console.error('Erro também ao carregar produtos.json de backup:', err2);
+    }
   }
 }
+
+// ── Modal de produto (estilo Shopee) ──────────────────────────────
+// ID e markup totalmente separados do modal/painel do carrinho
+// (#produto-modal-overlay vs #carrinho-painel), então abrir um nunca
+// interfere no estado do outro.
+function abrirProdutoModal(id) {
+  const p = produtosCache[id];
+  if (!p) {
+    console.warn('Produto não encontrado no cache:', id);
+    return;
+  }
+
+  const imgEl = document.getElementById('produto-modal-img');
+  imgEl.src = p.imagem;
+  imgEl.alt = p.imagemAlt || p.nomeExibicao;
+
+  document.getElementById('produto-modal-titulo').textContent = p.nomeExibicao;
+  document.getElementById('produto-modal-desc').innerHTML = montarItensHtml(p.itens);
+  document.getElementById('produto-modal-preco').textContent = `R$ ${p.preco}`;
+
+  const btnComprar = document.getElementById('produto-modal-btn-comprar');
+  btnComprar.dataset.nome = p.nomeCarrinho;
+  btnComprar.dataset.preco = p.preco;
+  btnComprar.dataset.descricao = p.descBusca;
+  btnComprar.disabled = false;
+  btnComprar.innerHTML = 'Adicionar ao carrinho';
+  btnComprar.onclick = () => adicionarCarrinho(btnComprar);
+
+  document.getElementById('produto-modal-overlay').classList.add('ativo');
+  document.body.style.overflow = 'hidden';
+}
+
+function fecharProdutoModal() {
+  document.getElementById('produto-modal-overlay').classList.remove('ativo');
+  document.body.style.overflow = '';
+}
+
+// Clicar na foto grande dentro do modal ainda dá pra ampliar via lightbox
+document.getElementById('produto-modal-img').addEventListener('click', e => {
+  e.stopPropagation();
+  abrirLightbox(e.target.src, e.target.alt);
+});
 
 const estadoCarrossel = {
   buques:        { pagina: 0 },
@@ -270,12 +364,18 @@ function adicionarCarrinho(btn) {
 
 function abrirCarrinho() {
   const painel = document.getElementById('carrinho-painel');
-  painel.style.display = painel.style.display === 'block' ? 'none' : 'block';
+  const vaiAbrir = painel.style.display !== 'block';
+  painel.style.display = vaiAbrir ? 'block' : 'none';
+  // No desktop, o painel abre centralizado (classe .ativo-centro no CSS);
+  // no mobile a classe não tem efeito, então o comportamento continua igual.
+  painel.classList.toggle('ativo-centro', vaiAbrir);
   atualizarCarrinho();
 }
 
 function fecharCarrinho() {
-  document.getElementById('carrinho-painel').style.display = 'none';
+  const painel = document.getElementById('carrinho-painel');
+  painel.style.display = 'none';
+  painel.classList.remove('ativo-centro');
 }
 
 function atualizarCarrinho() {
@@ -344,14 +444,15 @@ window.addEventListener('load', async () => {
     observer.observe(el);
   });
 
-  document.querySelectorAll('.card img, .card-cesta img').forEach(img => {
-    img.style.cursor = 'zoom-in';
+  // Clicar na imagem de um produto abre o modal estilo Shopee
+  // (em vez do zoom direto, que agora fica só dentro do modal)
+  document.querySelectorAll('.produto-clicavel').forEach(img => {
+    img.style.cursor = 'pointer';
     img.addEventListener('click', e => {
       e.stopPropagation();
-      abrirLightbox(img.src, img.alt);
+      abrirProdutoModal(img.dataset.produtoId);
     });
   });
 });
 
 window.addEventListener('resize', renderTodos);
-

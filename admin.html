@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Admin — Studio Moreira</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+</head>
+<body>
+
+  <!-- ── TELA DE LOGIN ── -->
+  <section id="tela-login" class="tela-login">
+    <form id="form-login" class="card-login">
+      <h1>Studio Moreira</h1>
+      <p class="subtitulo">Painel administrativo</p>
+
+      <label>
+        E-mail
+        <input type="email" id="login-email" required autocomplete="username">
+      </label>
+      <label>
+        Senha
+        <input type="password" id="login-senha" required autocomplete="current-password">
+      </label>
+
+      <p id="login-erro" class="mensagem-erro"></p>
+
+      <button type="submit">Entrar</button>
+    </form>
+  </section>
+
+  <!-- ── PAINEL (só aparece depois do login) ── -->
+  <section id="tela-admin" class="tela-admin oculto">
+    <header class="admin-header">
+      <div>
+        <h1>Studio Moreira</h1>
+        <p class="subtitulo">Painel administrativo</p>
+      </div>
+      <button id="btn-sair" class="btn-secundario">Sair</button>
+    </header>
+
+    <main class="admin-conteudo">
+
+      <section class="painel-bloco">
+        <h2>Adicionar produto</h2>
+        <form id="form-produto" class="form-produto">
+          <label>
+            Nome do produto
+            <input type="text" id="produto-nome" required placeholder="Ex: Buquê de 12 rosas">
+          </label>
+
+          <label>
+            Categoria
+            <select id="produto-categoria" required>
+              <option value="buques">Buquês</option>
+              <option value="glitter">Buquês com Glitter</option>
+              <option value="personalizados">Buquês Personalizados</option>
+              <option value="cestas">Cestas Personalizadas</option>
+            </select>
+          </label>
+
+          <label>
+            Itens (um por linha)
+            <textarea id="produto-itens" rows="4" required placeholder="12 rosas&#10;papel coreano&#10;1 laço de cetim"></textarea>
+          </label>
+
+          <label>
+            Valor (R$)
+            <input type="text" id="produto-preco" required placeholder="Ex: 89,90">
+          </label>
+
+          <label>
+            Foto do produto
+            <input type="file" id="produto-foto" accept="image/*" required>
+          </label>
+
+          <img id="produto-preview" class="preview-foto oculto" alt="Pré-visualização">
+
+          <p id="produto-erro" class="mensagem-erro"></p>
+          <p id="produto-sucesso" class="mensagem-sucesso"></p>
+
+          <button type="submit" id="btn-salvar-produto">Adicionar produto</button>
+        </form>
+      </section>
+
+      <section class="painel-bloco">
+        <h2>Produtos cadastrados</h2>
+        <div id="lista-produtos" class="lista-produtos">
+          <p class="carregando">Carregando...</p>
+        </div>
+      </section>
+
+    </main>
+  </section>
+
+  <script src="admin.js" defer></script>
+</body>
+</html>

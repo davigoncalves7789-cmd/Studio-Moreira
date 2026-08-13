@@ -429,6 +429,21 @@ body {
       color: #8B0032;
     }
 
+    /* Carrinho centralizado no desktop — mobile fica intocado (regra acima) */
+    @media (min-width: 751px) {
+      #carrinho-painel.ativo-centro {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        right: auto;
+        bottom: auto;
+        transform: translate(-50%, -50%);
+        width: 340px;
+        max-height: 80vh;
+        overflow-y: auto;
+      }
+    }
+
     .btn-adicionar {
       margin-top: 10px;
       padding: 8px 16px;
@@ -453,7 +468,7 @@ body {
       position: fixed;
       inset: 0;
       background: rgba(0,0,0,.85);
-      z-index: 2000;
+      z-index: 2400;
       align-items: center;
       justify-content: center;
       cursor: zoom-out;
@@ -476,6 +491,188 @@ body {
       cursor: pointer;
       line-height: 1;
       user-select: none;
+    }
+
+    /* ── Modal de produto — ID e estrutura independentes do carrinho ── */
+    .produto-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(25, 12, 18, .58);
+      backdrop-filter: blur(2px);
+      z-index: 2100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      box-sizing: border-box;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .25s ease, visibility .25s ease;
+    }
+    .produto-modal-overlay.ativo {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .produto-modal {
+      background: #FBF6F3;
+      border-radius: 6px;
+      max-width: 860px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      display: flex;
+      position: relative;
+      box-shadow: 0 24px 60px rgba(30, 10, 20, .3);
+      transform: translateY(14px) scale(.98);
+      transition: transform .25s ease;
+    }
+    .produto-modal-overlay.ativo .produto-modal {
+      transform: translateY(0) scale(1);
+    }
+
+    .produto-modal-fechar {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: rgba(255,255,255,.85);
+      font-size: 15px;
+      cursor: pointer;
+      color: #5b0f2a;
+      line-height: 1;
+      z-index: 2;
+      transition: background .2s ease;
+    }
+    .produto-modal-fechar:hover { background: #fff; }
+
+    .produto-modal-img {
+      flex: 1 1 46%;
+      min-width: 0;
+      background: #efe4e0;
+    }
+    .produto-modal-img img {
+      width: 100%;
+      height: 100%;
+      min-height: 300px;
+      object-fit: cover;
+      border-radius: 6px 0 0 6px;
+      cursor: zoom-in;
+      display: block;
+    }
+
+    .produto-modal-info {
+      flex: 1 1 54%;
+      padding: 44px 40px 36px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      box-sizing: border-box;
+      font-family: 'Inter', Arial, Helvetica, sans-serif;
+    }
+    .produto-modal-info h2 {
+      margin: 0;
+      color: #3a0e1c;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 600;
+      font-size: 30px;
+      line-height: 1.25;
+      letter-spacing: .2px;
+    }
+    .produto-modal-desc {
+      font-size: 13.5px;
+      line-height: 1.85;
+      color: #6b5a5e;
+      letter-spacing: .1px;
+    }
+
+    .produto-modal-avaliacoes {
+      border-top: 1px solid rgba(91, 15, 42, .14);
+      border-bottom: 1px solid rgba(91, 15, 42, .14);
+      padding: 16px 0;
+    }
+    .produto-modal-avaliacoes h4 {
+      margin: 0 0 6px;
+      color: #8B0032;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.4px;
+    }
+    .produto-modal-avaliacoes .em-breve {
+      margin: 0;
+      font-size: 13px;
+      color: #9a8a8e;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-style: italic;
+    }
+
+    .produto-modal-rodape {
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      padding-top: 4px;
+    }
+    .produto-modal-rodape-preco {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .produto-modal-rodape-preco .rotulo {
+      font-size: 10.5px;
+      text-transform: uppercase;
+      letter-spacing: 1.4px;
+      color: #a58c92;
+    }
+    .produto-modal-preco {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 28px;
+      font-weight: 600;
+      color: #3a0e1c;
+    }
+    .produto-modal-rodape .btn-adicionar {
+      margin-top: 0;
+      padding: 13px 26px;
+      font-size: 12.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-radius: 3px;
+      background: #5b0f2a;
+      box-shadow: 0 6px 16px rgba(91, 15, 42, .28);
+      transition: background .2s ease, transform .2s ease, box-shadow .2s ease;
+    }
+    .produto-modal-rodape .btn-adicionar:hover {
+      background: #7a1638;
+      transform: translateY(-1px);
+      box-shadow: 0 10px 22px rgba(91, 15, 42, .34);
+    }
+    .produto-modal-rodape .btn-adicionar:disabled {
+      background: #2f6b41;
+      box-shadow: none;
+      transform: none;
+    }
+
+    @media (max-width: 750px) {
+      .produto-modal {
+        flex-direction: column;
+        max-height: 88vh;
+      }
+      .produto-modal-img img {
+        border-radius: 6px 6px 0 0;
+        height: 240px;
+        min-height: 0;
+      }
+      .produto-modal-info { padding: 26px 22px; }
+      .produto-modal-info h2 { font-size: 24px; }
     }
 
     footer {
