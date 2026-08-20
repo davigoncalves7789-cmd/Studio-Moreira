@@ -36,10 +36,7 @@
         "addressRegion": "SP",
         "addressCountry": "BR"
       },
-      "areaServed": {
-        "@type": "City",
-        "name": "Franca"
-      },
+      "areaServed": { "@type": "City", "name": "Franca" },
       "openingHours": "Mo-Su 08:00-20:00",
       "sameAs": [
         "https://www.instagram.com/studio.moreira_oficial",
@@ -59,25 +56,34 @@
     ℹ️ Info
   </div>
 
-  <div id="info-painel">
-    <h3>Informações</h3>
-    <p>
-      <!-- ✏️ Escreva aqui as informações que quiser mostrar -->
-      <!-- Ex: prazo de entrega, formas de pagamento, área de entrega, etc. -->
-    </p>
-    <button onclick="fecharInfo()">Fechar</button>
+  <!-- Painel de Informações — agora é uma janela modal com fundo escurecido,
+       igual ao modal de produto: clicar fora ou no X fecha. -->
+  <div id="info-painel" onclick="fecharInfo()">
+    <div class="janela-conteudo" onclick="event.stopPropagation()">
+      <span class="janela-fechar" onclick="fecharInfo()">✕</span>
+      <h3>Informações</h3>
+      <p>
+        <!-- ✏️ Escreva aqui as informações que quiser mostrar -->
+        <!-- Ex: prazo de entrega, formas de pagamento, área de entrega, etc. -->
+      </p>
+      <button onclick="fecharInfo()">Entendi</button>
+    </div>
   </div>
 
   <div id="carrinho-icone" onclick="abrirCarrinho()">
     🛒 <span id="carrinho-count">0</span>
   </div>
 
-  <div id="carrinho-painel">
-    <h3>Seu pedido</h3>
-    <ul id="carrinho-lista"></ul>
-    <p id="carrinho-total"></p>
-    <button onclick="finalizarPedido()">💬 Finalizar pelo WhatsApp</button>
-    <button onclick="fecharCarrinho()">Fechar</button>
+  <!-- Painel do Carrinho — mesma lógica de janela modal do Info -->
+  <div id="carrinho-painel" onclick="fecharCarrinho()">
+    <div class="janela-conteudo" onclick="event.stopPropagation()">
+      <span class="janela-fechar" onclick="fecharCarrinho()">✕</span>
+      <h3>Seu pedido</h3>
+      <ul id="carrinho-lista"></ul>
+      <p id="carrinho-total"></p>
+      <button onclick="finalizarPedido()">💬 Finalizar pelo WhatsApp</button>
+      <button onclick="fecharCarrinho()">Fechar</button>
+    </div>
   </div>
 
   <!-- MODAL DE PRODUTO (estilo Shopee) — ID próprio, independente do carrinho -->
@@ -113,7 +119,6 @@
   <header>
     <div class="header-top">
       <div class="header-banner">
-        <img src="./img/1.jpg" alt="Banner Image">
         <div class="links">
           <a class="instagram" href="https://www.instagram.com/studio.moreira_oficial?utm_source=qr&igsh=MXFiajhuZTcxM2hzbg==">📸 Instagram</a>
           <a class="whatsapp" href="https://wa.me/p/9979262752156221/5516993414588">💬 Faça o seu personalizado!</a>
@@ -129,11 +134,22 @@
       </div>
     </div>
     <div class="search-wrap">
+      <button id="search-toggle" class="search-icone" onclick="toggleBusca()" aria-label="Abrir busca">🔍</button>
       <input type="text"
              id="searchInput"
-             placeholder="🔍 Digite o buquê que você quer (ex: rosa, vermelho, corinthians…)" />
+             class="busca-input"
+             placeholder="Digite o buquê que você quer (ex: rosa, vermelho, corinthians…)" />
     </div>
   </header>
+
+  <!-- HERO / FRASE DE DESTAQUE — aparece antes dos buquês; ao rolar a
+       página é que os produtos entram. -->
+  <section class="hero-frase">
+    <p>
+      <!-- ✏️ Troque por uma frase que combine com a marca -->
+      Flores que contam histórias, momentos que se tornam memórias.
+    </p>
+  </section>
 
   <!-- BUQUÊS -->
   <h2 class="galeria-title">🌹 Nossos Buquês</h2>

@@ -1,4 +1,3 @@
-
 // ── Conexão com o Supabase ─────────────────────────────────────────
 // Essa chave é "publishable" (antiga "anon public"): foi feita pra
 // ficar exposta no código do site. Quem protege o banco de verdade
@@ -23,6 +22,8 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     fecharLightbox();
     fecharProdutoModal();
+    fecharInfo();
+    fecharCarrinho();
   }
 });
 
@@ -30,9 +31,11 @@ document.getElementById('lightbox-img').addEventListener('click', e => {
   e.stopPropagation();
 });
 
+// ── Painel de Informações — agora abre como janela modal (display:flex
+// pra centralizar o conteúdo), igual ao modal de produto. ──────────
 function abrirInfo() {
   const painel = document.getElementById('info-painel');
-  painel.style.display = painel.style.display === 'block' ? 'none' : 'block';
+  painel.style.display = painel.style.display === 'flex' ? 'none' : 'flex';
 }
 
 function fecharInfo() {
@@ -171,9 +174,6 @@ async function carregarProdutos() {
 }
 
 // ── Modal de produto (estilo Shopee) ──────────────────────────────
-// ID e markup totalmente separados do modal/painel do carrinho
-// (#produto-modal-overlay vs #carrinho-painel), então abrir um nunca
-// interfere no estado do outro.
 function abrirProdutoModal(id) {
   const p = produtosCache[id];
   if (!p) {
@@ -206,7 +206,6 @@ function fecharProdutoModal() {
   document.body.style.overflow = '';
 }
 
-// Clicar na foto grande dentro do modal ainda dá pra ampliar via lightbox
 document.getElementById('produto-modal-img').addEventListener('click', e => {
   e.stopPropagation();
   abrirLightbox(e.target.src, e.target.alt);
@@ -279,6 +278,25 @@ function renderTodos() {
 const input           = document.getElementById('searchInput');
 const noResults       = document.getElementById('noResults');
 const noResultsCestas = document.getElementById('noResultsCestas');
+
+// ── Busca colapsável: só a lupa, expande ao clicar ────────────────
+function toggleBusca() {
+  const wrap = document.querySelector('.search-wrap');
+  const vaiAbrir = !wrap.classList.contains('aberta');
+  wrap.classList.toggle('aberta', vaiAbrir);
+  if (vaiAbrir) {
+    input.focus();
+  }
+}
+
+// Se o campo perder o foco vazio, recolhe de volta pra só o ícone —
+// mas só fecha se realmente não tem texto digitado, senão o usuário
+// perderia a busca sem querer.
+input.addEventListener('blur', () => {
+  if (!input.value.trim()) {
+    document.querySelector('.search-wrap').classList.remove('aberta');
+  }
+});
 
 function normalize(str) {
   return str
@@ -362,20 +380,17 @@ function adicionarCarrinho(btn) {
   }, 1200);
 }
 
+// ── Painel do Carrinho — agora é sempre uma janela modal centralizada
+// (display:flex), em qualquer tamanho de tela. ────────────────────
 function abrirCarrinho() {
   const painel = document.getElementById('carrinho-painel');
-  const vaiAbrir = painel.style.display !== 'block';
-  painel.style.display = vaiAbrir ? 'block' : 'none';
-  // No desktop, o painel abre centralizado (classe .ativo-centro no CSS);
-  // no mobile a classe não tem efeito, então o comportamento continua igual.
-  painel.classList.toggle('ativo-centro', vaiAbrir);
+  const vaiAbrir = painel.style.display !== 'flex';
+  painel.style.display = vaiAbrir ? 'flex' : 'none';
   atualizarCarrinho();
 }
 
 function fecharCarrinho() {
-  const painel = document.getElementById('carrinho-painel');
-  painel.style.display = 'none';
-  painel.classList.remove('ativo-centro');
+  document.getElementById('carrinho-painel').style.display = 'none';
 }
 
 function atualizarCarrinho() {
@@ -436,16 +451,14 @@ const observer = new IntersectionObserver((entries) => {
 }, { threshold: 0.1 });
 
 window.addEventListener('load', async () => {
-  document.getElementById('carrinho-count').textContent = carrinho.length; 
+  document.getElementById('carrinho-count').textContent = carrinho.length;
   await carregarProdutos();
-  renderTodos();              
+  renderTodos();
 
   document.querySelectorAll('.card, .card-cesta').forEach(el => {
     observer.observe(el);
   });
 
-  // Clicar na imagem de um produto abre o modal estilo Shopee
-  // (em vez do zoom direto, que agora fica só dentro do modal)
   document.querySelectorAll('.produto-clicavel').forEach(img => {
     img.style.cursor = 'pointer';
     img.addEventListener('click', e => {
