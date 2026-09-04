@@ -168,6 +168,28 @@ button:disabled { background: #b7a2a7; cursor: default; transform: none; }
   gap: 10px;
 }
 
+.form-produto-acoes {
+  display: flex;
+  gap: 10px;
+}
+
+.produto-linha .acoes {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.produto-linha .btn-excluir,
+.produto-linha .btn-editar {
+  padding: 8px 14px;
+  font-size: 11px;
+}
+.produto-linha .btn-editar {
+  background: transparent;
+  color: #5b0f2a;
+  border: 1px solid rgba(91, 15, 42, .3);
+}
+.produto-linha .btn-editar:hover { background: rgba(91, 15, 42, .06); }
+
 .carregando { font-size: 13px; color: #a58c92; font-style: italic; }
 
 .produto-linha {

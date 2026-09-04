@@ -48,7 +48,7 @@
     <main class="admin-conteudo">
 
       <section class="painel-bloco">
-        <h2>Adicionar produto</h2>
+        <h2 id="titulo-form-produto">Adicionar produto</h2>
         <form id="form-produto" class="form-produto">
           <label>
             Nome do produto
@@ -77,15 +77,19 @@
 
           <label>
             Foto do produto
-            <input type="file" id="produto-foto" accept="image/*" required>
+            <input type="file" id="produto-foto" accept="image/*">
           </label>
+          <p id="produto-foto-aviso" class="mensagem-erro oculto">Editando: a foto atual é mantida se você não escolher uma nova.</p>
 
           <img id="produto-preview" class="preview-foto oculto" alt="Pré-visualização">
 
           <p id="produto-erro" class="mensagem-erro"></p>
           <p id="produto-sucesso" class="mensagem-sucesso"></p>
 
-          <button type="submit" id="btn-salvar-produto">Adicionar produto</button>
+          <div class="form-produto-acoes">
+            <button type="submit" id="btn-salvar-produto">Adicionar produto</button>
+            <button type="button" id="btn-cancelar-edicao" class="btn-secundario oculto">Cancelar edição</button>
+          </div>
         </form>
       </section>
 

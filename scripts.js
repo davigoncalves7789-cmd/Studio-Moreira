@@ -68,7 +68,6 @@ function criarCardHtml(p) {
       <div class="card-body">
         <img src="${p.imagem}" alt="${escapeAttr(p.imagemAlt)}" class="produto-clicavel" data-produto-id="${escapeAttr(p.id)}" />
         <div class="card-desc">
-          <p>${montarItensHtml(p.itens)}</p>
           <span class="preco">Valor: R$ ${p.preco}</span>
           <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
             data-nome="${escapeAttr(p.nomeCarrinho)}"
@@ -90,7 +89,6 @@ function criarCardCestaHtml(p) {
       <div class="card-body-cesta">
         <img src="${p.imagem}" alt="${escapeAttr(p.imagemAlt)}" class="produto-clicavel" data-produto-id="${escapeAttr(p.id)}">
         <div class="card-desc-cesta">
-          <p>${montarItensHtml(p.itens)}</p>
           <span class="preco">Valor: R$ ${p.preco}</span>
           <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
             data-nome="${escapeAttr(p.nomeCarrinho)}"

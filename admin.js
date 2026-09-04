@@ -53,12 +53,77 @@ const previewFoto = document.getElementById('produto-preview');
 inputFoto.addEventListener('change', () => {
   const arquivo = inputFoto.files[0];
   if (!arquivo) {
-    previewFoto.classList.add('oculto');
+    // Se está editando e a pessoa desmarcar o arquivo, volta a mostrar
+    // a foto atual do produto em vez de esconder a prévia.
+    if (produtoEmEdicao && fotoAtualUrl) {
+      previewFoto.src = fotoAtualUrl;
+      previewFoto.classList.remove('oculto');
+    } else {
+      previewFoto.classList.add('oculto');
+    }
     return;
   }
   previewFoto.src = URL.createObjectURL(arquivo);
   previewFoto.classList.remove('oculto');
 });
+
+// ── Estado de edição ──────────────────────────────────────────────
+// Quando produtoEmEdicao !== null, o formulário está editando aquele
+// produto em vez de criar um novo. Guardamos também os produtos já
+// carregados na lista (por id) pra preencher o formulário sem precisar
+// buscar de novo no Supabase.
+let produtoEmEdicao = null;
+let fotoAtualUrl = null;
+let produtosCacheAdmin = {};
+
+const tituloForm = document.getElementById('titulo-form-produto');
+const btnSalvarProduto = document.getElementById('btn-salvar-produto');
+const btnCancelarEdicao = document.getElementById('btn-cancelar-edicao');
+const avisoFotoEdicao = document.getElementById('produto-foto-aviso');
+
+function entrarModoEdicao(produto) {
+  produtoEmEdicao = produto.id;
+  fotoAtualUrl = produto.imagem_url;
+
+  document.getElementById('produto-nome').value = produto.nome_exibicao;
+  document.getElementById('produto-categoria').value = produto.categoria;
+  document.getElementById('produto-itens').value = (produto.itens || []).join('\n');
+  document.getElementById('produto-preco').value = produto.preco;
+
+  inputFoto.value = '';
+  inputFoto.required = false;
+  previewFoto.src = produto.imagem_url;
+  previewFoto.classList.remove('oculto');
+  avisoFotoEdicao.classList.remove('oculto');
+
+  tituloForm.textContent = 'Editar produto';
+  btnSalvarProduto.textContent = 'Salvar alterações';
+  btnCancelarEdicao.classList.remove('oculto');
+
+  document.getElementById('produto-erro').textContent = '';
+  document.getElementById('produto-sucesso').textContent = '';
+  document.getElementById('form-produto').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function sairModoEdicao() {
+  produtoEmEdicao = null;
+  fotoAtualUrl = null;
+
+  document.getElementById('form-produto').reset();
+  inputFoto.required = true;
+  previewFoto.classList.add('oculto');
+  avisoFotoEdicao.classList.add('oculto');
+
+  tituloForm.textContent = 'Adicionar produto';
+  btnSalvarProduto.textContent = 'Adicionar produto';
+  btnSalvarProduto.disabled = false;
+  btnCancelarEdicao.classList.add('oculto');
+
+  document.getElementById('produto-erro').textContent = '';
+  document.getElementById('produto-sucesso').textContent = '';
+}
+
+btnCancelarEdicao.addEventListener('click', sairModoEdicao);
 
 // ── Gera um id único e legível a partir do nome do produto ──────────
 function gerarId(nome) {
@@ -88,7 +153,7 @@ async function subirFoto(arquivo, id) {
   return data.publicUrl;
 }
 
-// ── Adicionar produto ────────────────────────────────────────────
+// ── Adicionar / salvar edição de produto ─────────────────────────
 document.getElementById('form-produto').addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -103,23 +168,25 @@ document.getElementById('form-produto').addEventListener('submit', async (e) => 
   const itensTexto = document.getElementById('produto-itens').value.trim();
   const preco = document.getElementById('produto-preco').value.trim();
   const arquivo = inputFoto.files[0];
+  const editando = Boolean(produtoEmEdicao);
 
-  if (!nome || !categoria || !itensTexto || !preco || !arquivo) {
+  // Na edição, a foto é opcional (mantém a atual se nenhuma for escolhida).
+  // Ao adicionar um produto novo, a foto continua obrigatória.
+  if (!nome || !categoria || !itensTexto || !preco || (!editando && !arquivo)) {
     erroEl.textContent = 'Preenche todos os campos, incluindo a foto.';
     return;
   }
 
   const itens = itensTexto.split('\n').map(l => l.trim()).filter(Boolean);
-  const id = gerarId(nome);
+  const id = editando ? produtoEmEdicao : gerarId(nome);
 
   btn.disabled = true;
-  btn.textContent = 'Enviando...';
+  btn.textContent = editando ? 'Salvando...' : 'Enviando...';
 
   try {
-    const imagemUrl = await subirFoto(arquivo, id);
+    const imagemUrl = arquivo ? await subirFoto(arquivo, id) : fotoAtualUrl;
 
-    const { error } = await supabaseClient.from('produtos').insert({
-      id,
+    const dadosProduto = {
       categoria,
       nome_exibicao: nome,
       nome_busca: nome,
@@ -129,20 +196,22 @@ document.getElementById('form-produto').addEventListener('submit', async (e) => 
       imagem_alt: nome,
       itens,
       preco,
-    });
+    };
+
+    const { error } = editando
+      ? await supabaseClient.from('produtos').update(dadosProduto).eq('id', id)
+      : await supabaseClient.from('produtos').insert({ id, ...dadosProduto });
 
     if (error) throw error;
 
-    sucessoEl.textContent = 'Produto adicionado! Já está no ar.';
-    e.target.reset();
-    previewFoto.classList.add('oculto');
+    sucessoEl.textContent = editando ? 'Produto atualizado!' : 'Produto adicionado! Já está no ar.';
+    sairModoEdicao();
     carregarListaProdutos();
   } catch (err) {
-    console.error('Erro ao adicionar produto:', err);
+    console.error('Erro ao salvar produto:', err);
     erroEl.textContent = 'Não consegui salvar. Tenta de novo em alguns segundos.';
-  } finally {
     btn.disabled = false;
-    btn.textContent = 'Adicionar produto';
+    btn.textContent = editando ? 'Salvar alterações' : 'Adicionar produto';
   }
 });
 
@@ -174,7 +243,9 @@ async function carregarListaProdutos() {
   }
 
   lista.innerHTML = '';
+  produtosCacheAdmin = {};
   data.forEach(p => {
+    produtosCacheAdmin[p.id] = p;
     const linha = document.createElement('div');
     linha.className = 'produto-linha';
     linha.innerHTML = `
@@ -183,9 +254,19 @@ async function carregarListaProdutos() {
         <div class="nome">${p.nome_exibicao}</div>
         <div class="meta">${NOMES_CATEGORIA[p.categoria] || p.categoria} · R$ ${p.preco}</div>
       </div>
-      <button class="btn-excluir" data-id="${p.id}">Excluir</button>
+      <div class="acoes">
+        <button class="btn-editar" data-id="${p.id}">Editar</button>
+        <button class="btn-excluir" data-id="${p.id}">Excluir</button>
+      </div>
     `;
     lista.appendChild(linha);
+  });
+
+  lista.querySelectorAll('.btn-editar').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const produto = produtosCacheAdmin[btn.dataset.id];
+      if (produto) entrarModoEdicao(produto);
+    });
   });
 
   lista.querySelectorAll('.btn-excluir').forEach(btn => {
@@ -201,5 +282,6 @@ async function excluirProduto(id) {
     alert('Não consegui excluir. Tenta de novo.');
     return;
   }
+  if (produtoEmEdicao === id) sairModoEdicao();
   carregarListaProdutos();
 }
