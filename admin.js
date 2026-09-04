@@ -5,10 +5,26 @@
 // exigem estar autenticado pra inserir/editar/apagar produtos.
 const SUPABASE_URL = 'https://padjfxslzjhgtqujdkbx.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_50YMqseOFR5Yma5AF1FCuQ_Y5xVaHBj';
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// Mesmo risco do site principal: se o CDN do Supabase não carregar a
+// tempo (conexão ruim), "window.supabase" vem undefined e a criação
+// do client quebrava o script inteiro sem nenhum aviso. Aqui não tem
+// como funcionar sem o Supabase (login e RLS dependem dele), então em
+// vez de fallback a gente mostra um erro claro na tela de login.
+const supabaseClient = (typeof window.supabase !== 'undefined')
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+  : null;
 
 const telaLogin = document.getElementById('tela-login');
 const telaAdmin = document.getElementById('tela-admin');
+
+if (!supabaseClient) {
+  const erroInicial = document.getElementById('login-erro');
+  if (erroInicial) {
+    erroInicial.textContent = 'Não consegui carregar o sistema de login. Verifique sua conexão e recarregue a página.';
+  }
+  document.querySelector('#form-login button[type="submit"]')?.setAttribute('disabled', 'true');
+}
 
 function mostrarAdmin() {
   telaLogin.classList.add('oculto');
@@ -22,9 +38,11 @@ function mostrarLogin() {
 }
 
 // Se já existir uma sessão válida (login anterior), pula direto pro painel
-supabaseClient.auth.getSession().then(({ data }) => {
-  if (data.session) mostrarAdmin();
-});
+if (supabaseClient) {
+  supabaseClient.auth.getSession().then(({ data }) => {
+    if (data.session) mostrarAdmin();
+  });
+}
 
 // ── Login ────────────────────────────────────────────────────────
 document.getElementById('form-login').addEventListener('submit', async (e) => {
@@ -33,6 +51,11 @@ document.getElementById('form-login').addEventListener('submit', async (e) => {
   const senha = document.getElementById('login-senha').value;
   const erroEl = document.getElementById('login-erro');
   erroEl.textContent = '';
+
+  if (!supabaseClient) {
+    erroEl.textContent = 'Sistema de login indisponível. Verifique sua conexão e recarregue a página.';
+    return;
+  }
 
   const { error } = await supabaseClient.auth.signInWithPassword({ email, password: senha });
   if (error) {

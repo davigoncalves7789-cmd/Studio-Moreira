@@ -5,7 +5,17 @@
 // dessa chave.
 const SUPABASE_URL = 'https://padjfxslzjhgtqujdkbx.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_50YMqseOFR5Yma5AF1FCuQ_Y5xVaHBj';
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// Em conexões mais lentas ou instáveis (comum em celular), o script do
+// CDN do Supabase pode não terminar de carregar a tempo. Sem essa
+// checagem, "window.supabase" viria undefined e a linha abaixo travaria
+// com um erro fatal — o que impedia até o carrossel.js de continuar e
+// derrubava o fallback pro produtos.json que já existe lá embaixo.
+// Com a checagem, se o CDN falhar, supabaseClient fica null e o
+// carregarProdutos() cai direto no fallback local.
+const supabaseClient = (typeof window.supabase !== 'undefined')
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+  : null;
 
 function abrirLightbox(src, alt) {
   const lb = document.getElementById('lightbox');
@@ -146,6 +156,8 @@ function mapearProdutoDoBanco(row) {
 
 async function carregarProdutos() {
   try {
+    if (!supabaseClient) throw new Error('Cliente Supabase indisponível (CDN não carregou a tempo)');
+
     const { data, error } = await supabaseClient
       .from('produtos')
       .select('*')
