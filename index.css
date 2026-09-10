@@ -188,26 +188,91 @@ header {
 .busca-input::placeholder { color: var(--color-ink-faint); }
 
 /* ══════════════════════════════════════════════════════════════
-   HERO — frase de destaque entre o header e os produtos
+   ABAS DE CATEGORIA — barra perto da busca; só o painel da aba
+   ativa fica visível por vez.
    ══════════════════════════════════════════════════════════════ */
-.hero-frase {
-  text-align: center;
-  padding: 60px 24px 50px;
-  max-width: 680px;
+.oculto { display: none !important; }
+
+.abas-categorias {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 14px 20px 0;
   margin: 0 auto;
+  max-width: 900px;
 }
-.hero-frase p {
+.aba {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .2px;
+  padding: 9px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--color-rose-soft);
+  background: var(--color-surface);
+  color: var(--color-ink-muted);
+  cursor: pointer;
+  transition: background .2s ease, color .2s ease, border-color .2s ease, transform .15s ease;
+}
+.aba:hover { border-color: var(--color-rose); transform: translateY(-1px); }
+.aba.ativa {
+  background: var(--color-wine);
+  border-color: var(--color-wine);
+  color: #fff;
+}
+@media (max-width: 750px) {
+  .abas-categorias {
+    padding: 10px 14px 0;
+    gap: 6px;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .abas-categorias::-webkit-scrollbar { display: none; }
+  .aba { flex-shrink: 0; padding: 8px 14px; font-size: 12.5px; }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   BANNER DE DESTAQUE — gradiente animado; o texto roda entre
+   mensagens via JS (classe .sumindo faz o fade, ver scripts.js).
+   ══════════════════════════════════════════════════════════════ */
+.hero-banner {
+  margin: 20px auto 0;
+  max-width: 900px;
+  padding: 0 20px;
+}
+.hero-banner-inner {
+  background: linear-gradient(120deg, var(--color-wine) 0%, var(--color-rose-dark) 50%, var(--color-wine) 100%);
+  background-size: 200% 200%;
+  animation: hero-gradiente 7s ease infinite;
+  border-radius: var(--radius-lg);
+  padding: 26px 32px;
+  box-shadow: var(--shadow-md);
+  text-align: center;
+  overflow: hidden;
+}
+@keyframes hero-gradiente {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.hero-banner-texto {
   font-family: var(--font-display);
   font-style: italic;
   font-weight: 500;
-  font-size: 27px;
+  font-size: 22px;
   line-height: 1.5;
-  color: var(--color-wine);
+  color: #fff;
   margin: 0;
+  transition: opacity .4s ease, transform .4s ease;
 }
+.hero-banner-texto.sumindo { opacity: 0; transform: translateY(-6px); }
 @media (max-width: 750px) {
-  .hero-frase { padding: 40px 20px 32px; }
-  .hero-frase p { font-size: 20px; }
+  .hero-banner { margin-top: 14px; padding: 0 14px; }
+  .hero-banner-inner { padding: 20px 20px; }
+  .hero-banner-texto { font-size: 16.5px; }
 }
 
 /* ── Título das seções ── */
@@ -221,48 +286,24 @@ header {
   letter-spacing: .3px;
 }
 
-/* ── Carrossel ── */
-.carrossel-wrap {
-  position: relative;
-  padding: 0 48px 48px;
-  max-width: 100%;
-  margin: 0 auto;
-  box-sizing: border-box;
-}
-
-.carrossel {
+/* ── Grid de produtos — usado em todas as abas de categoria.
+   Quebra em 2-3 fileiras sozinho, sem precisar de setas/carrossel. ── */
+.grid-produtos {
   display: flex;
-  gap: 20px;
-  overflow: hidden;
-  width: 100%;
-  min-width: 0;
-  box-sizing: border-box;
-}
-
-.seta {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-60%);
-  background: var(--color-wine);
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  font-size: 17px;
-  cursor: pointer;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
+  flex-wrap: wrap;
   justify-content: center;
-  box-shadow: var(--shadow-sm);
-  transition: opacity .2s, background .2s;
-  z-index: 10;
+  gap: 20px;
+  padding: 0 24px 48px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
-.seta-esq { left: 6px; }
-.seta-dir { right: 6px; }
-.seta:hover { background: var(--color-wine-hover); }
-.seta:disabled { opacity: .3; cursor: default; }
+.grid-produtos .card {
+  flex: 0 0 240px;
+}
+@media (max-width: 750px) {
+  .grid-produtos { padding: 0 16px 32px; gap: 14px; }
+  .grid-produtos .card { flex: 0 0 100%; max-width: 320px; }
+}
 
 .card {
   background: var(--color-surface);
@@ -274,7 +315,6 @@ header {
   align-items: center;
   box-shadow: var(--shadow-sm);
   transition: transform 0.3s ease, box-shadow .25s ease, opacity 0.5s ease;
-  flex: 0 0 calc(25% - 15px);
   min-width: 0;
   box-sizing: border-box;
 }
@@ -352,23 +392,23 @@ header {
 .banner-cesta {
   display: flex;
   justify-content: center;
-  gap: 40px;
+  gap: 24px;
   flex-wrap: wrap;
   padding: 0 24px 48px;
-  max-width: 1000px;
+  max-width: 1100px;
   margin: 0 auto;
 }
 
 .card-cesta {
   border-radius: var(--radius-lg);
-  padding: 24px;
+  padding: 22px;
   box-shadow: var(--shadow-sm);
   background: var(--color-surface);
   border: 1px solid var(--color-rose-soft);
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 420px;
+  width: 340px;
   max-width: 100%;
   transition: transform 0.3s ease, box-shadow .25s ease, opacity 0.5s ease;
 }
@@ -394,7 +434,7 @@ header {
   width: 100%;
 }
 .card-body-cesta img {
-  width: 200px;
+  width: 150px;
   height: auto;
   border-radius: var(--radius-md);
   object-fit: cover;
@@ -438,10 +478,17 @@ header {
    Os dois viram uma janela real: fundo escurecido + caixa
    centralizada, em vez de painéis soltos no canto da tela.
    ══════════════════════════════════════════════════════════════ */
-#info-icone,
-#carrinho-icone {
+.icones-flutuantes {
   position: fixed;
   bottom: 24px;
+  left: 24px;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+#info-icone {
   background: var(--color-wine);
   color: white;
   padding: 12px 18px;
@@ -450,17 +497,40 @@ header {
   font-weight: 600;
   font-size: 14.5px;
   cursor: pointer;
-  z-index: 999;
   box-shadow: var(--shadow-md);
   transition: background .2s;
 }
-#info-icone:hover,
-#carrinho-icone:hover { background: var(--color-wine-hover); }
-#info-icone { left: 24px; }
-#carrinho-icone { right: 24px; }
+#info-icone:hover { background: var(--color-wine-hover); }
 
-#info-painel,
-#carrinho-painel {
+#carrinho-icone {
+  position: relative;
+  font-size: 27px;
+  line-height: 1;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 4px;
+}
+.carrinho-badge {
+  position: absolute;
+  top: -4px;
+  right: -6px;
+  background: var(--color-wine);
+  color: white;
+  font-family: var(--font-body);
+  font-size: 10.5px;
+  font-weight: 700;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  box-sizing: border-box;
+}
+
+#info-painel {
   display: none;
   position: fixed;
   inset: 0;
@@ -525,6 +595,23 @@ header {
   margin: 0 0 14px;
 }
 
+.info-lista {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: left;
+}
+.info-lista li {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--color-ink-muted);
+  line-height: 1.6;
+}
+.info-lista strong { color: var(--color-wine); }
+
 .janela-conteudo button {
   width: 100%;
   padding: 11px;
@@ -554,7 +641,7 @@ header {
   list-style: none;
   padding: 0;
   margin-bottom: 12px;
-  max-height: 200px;
+  max-height: 50vh;
   overflow-y: auto;
 }
 #carrinho-lista li {
@@ -573,6 +660,48 @@ header {
   font-weight: 600;
   color: var(--color-wine);
 }
+
+/* ── Carrinho como aba própria (em vez de janela modal) ── */
+.carrinho-conteudo {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0 20px 60px;
+}
+.carrinho-caixa {
+  background: var(--color-surface);
+  border: 1px solid var(--color-rose-soft);
+  border-radius: var(--radius-lg);
+  padding: 26px;
+  box-shadow: var(--shadow-sm);
+}
+.carrinho-vazio {
+  text-align: center;
+  color: var(--color-ink-faint);
+  font-family: var(--font-body);
+  font-size: 14px;
+  padding: 20px 0 28px;
+}
+.carrinho-acoes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+}
+.carrinho-acoes button {
+  width: 100%;
+  padding: 13px;
+  border-radius: 30px;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 13.5px;
+  transition: opacity .2s, background .2s;
+}
+.carrinho-acoes .btn-principal { background: var(--color-wine); color: white; }
+.carrinho-acoes .btn-principal:hover { background: var(--color-wine-hover); }
+.carrinho-acoes .btn-secundario-carrinho { background: var(--color-rose-soft); color: var(--color-wine); }
+.carrinho-acoes .btn-secundario-carrinho:hover { background: var(--color-rose-soft-2); }
 
 .btn-adicionar {
   margin-top: 10px;
@@ -866,37 +995,9 @@ footer {
   .search-wrap { margin-top: 6px; }
   .search-wrap.aberta .busca-input { max-width: calc(100vw - 100px); }
 
-  .hero-frase { padding: 36px 20px 28px; }
-
-  .carrossel-wrap { padding: 0 0 24px; }
-
-  .carrossel {
-    overflow-x: auto;
-    overflow-y: hidden;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    gap: 12px;
-    padding: 0 16px 10px;
-    scrollbar-width: none;
-  }
-  .carrossel::-webkit-scrollbar { display: none; }
-
   .card {
-    flex: 0 0 31%;
-    scroll-snap-align: start;
     border-radius: var(--radius-md);
     display: flex !important;
-  }
-
-  .seta { display: none; }
-
-  .swipe-hint {
-    display: block;
-    text-align: center;
-    font-family: var(--font-body);
-    font-size: 12px;
-    color: var(--color-ink-faint);
-    margin: -16px 0 8px;
   }
 
   .card-title { font-size: 12px; padding: 6px 4px 4px; }
@@ -922,12 +1023,11 @@ footer {
   .card-desc-cesta .preco { font-size: 15px; }
   .card-desc-cesta .btn-adicionar { font-size: 11.5px; padding: 9px 10px; }
 
-  #info-icone, #carrinho-icone { font-size: 13px; padding: 9px 13px; bottom: 16px; }
-  #info-icone { left: 16px; }
-  #carrinho-icone { right: 16px; }
+  .icones-flutuantes { bottom: 16px; left: 16px; gap: 12px; }
+  #info-icone { font-size: 13px; padding: 9px 13px; }
+  #carrinho-icone { font-size: 24px; }
 }
 
-.swipe-hint { display: none; }
 .card,
 .card-cesta {
   opacity: 0;

@@ -103,6 +103,7 @@ const tituloForm = document.getElementById('titulo-form-produto');
 const btnSalvarProduto = document.getElementById('btn-salvar-produto');
 const btnCancelarEdicao = document.getElementById('btn-cancelar-edicao');
 const avisoFotoEdicao = document.getElementById('produto-foto-aviso');
+const inputMaisVendido = document.getElementById('produto-mais-vendido');
 
 function entrarModoEdicao(produto) {
   produtoEmEdicao = produto.id;
@@ -112,6 +113,7 @@ function entrarModoEdicao(produto) {
   document.getElementById('produto-categoria').value = produto.categoria;
   document.getElementById('produto-itens').value = (produto.itens || []).join('\n');
   document.getElementById('produto-preco').value = produto.preco;
+  inputMaisVendido.checked = Boolean(produto.mais_vendido);
 
   inputFoto.value = '';
   inputFoto.required = false;
@@ -133,6 +135,7 @@ function sairModoEdicao() {
   fotoAtualUrl = null;
 
   document.getElementById('form-produto').reset();
+  inputMaisVendido.checked = false;
   inputFoto.required = true;
   previewFoto.classList.add('oculto');
   avisoFotoEdicao.classList.add('oculto');
@@ -219,6 +222,7 @@ document.getElementById('form-produto').addEventListener('submit', async (e) => 
       imagem_alt: nome,
       itens,
       preco,
+      mais_vendido: inputMaisVendido.checked,
     };
 
     const { error } = editando
@@ -275,7 +279,7 @@ async function carregarListaProdutos() {
       <img src="${p.imagem_url}" alt="">
       <div class="info">
         <div class="nome">${p.nome_exibicao}</div>
-        <div class="meta">${NOMES_CATEGORIA[p.categoria] || p.categoria} · R$ ${p.preco}</div>
+        <div class="meta">${NOMES_CATEGORIA[p.categoria] || p.categoria} · R$ ${p.preco}${p.mais_vendido ? ' · <span class="badge-mais-vendido">⭐ Mais vendido</span>' : ''}</div>
       </div>
       <div class="acoes">
         <button class="btn-editar" data-id="${p.id}">Editar</button>

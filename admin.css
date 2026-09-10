@@ -173,6 +173,23 @@ button:disabled { background: #b7a2a7; cursor: default; transform: none; }
   gap: 10px;
 }
 
+.checkbox-linha {
+  flex-direction: row !important;
+  align-items: center;
+  gap: 8px !important;
+}
+.checkbox-linha input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.badge-mais-vendido {
+  color: #b8860b;
+  font-weight: 600;
+}
+
 .produto-linha .acoes {
   display: flex;
   gap: 8px;

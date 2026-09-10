@@ -52,37 +52,26 @@
 </head>
 <body>
 
-  <div id="info-icone" onclick="abrirInfo()">
-    ℹ️ Info
+  <div class="icones-flutuantes">
+    <div id="info-icone" onclick="abrirInfo()">ℹ️ Info</div>
+    <div id="carrinho-icone" onclick="ativarAba('carrinho')">
+      🛒<span id="carrinho-count" class="carrinho-badge">0</span>
+    </div>
   </div>
 
-  <!-- Painel de Informações — agora é uma janela modal com fundo escurecido,
-       igual ao modal de produto: clicar fora ou no X fecha. -->
+  <!-- Painel de Informações — janela modal com fundo escurecido. -->
   <div id="info-painel" onclick="fecharInfo()">
     <div class="janela-conteudo" onclick="event.stopPropagation()">
       <span class="janela-fechar" onclick="fecharInfo()">✕</span>
       <h3>Informações</h3>
-      <p>
-        <!-- ✏️ Escreva aqui as informações que quiser mostrar -->
-        <!-- Ex: prazo de entrega, formas de pagamento, área de entrega, etc. -->
-      </p>
+      <p>Algumas informações importantes antes de fazer seu pedido:</p>
+      <ul class="info-lista">
+        <li>🗓️ Pedidos devem ser feitos com no mínimo <strong>2 dias de antecedência</strong>.</li>
+        <li>💳 Parcelamos em até <strong>2x na maquininha</strong>, com acréscimo de <strong>10%</strong> sobre o valor total.</li>
+        <li>📦 Entregas fora de Franca-SP têm acréscimo equivalente à <strong>taxa dos Correios</strong>.</li>
+        <li>🚚 Entregas dentro de Franca-SP têm taxa fixa de <strong>+ R$ 10,00</strong>.</li>
+      </ul>
       <button onclick="fecharInfo()">Entendi</button>
-    </div>
-  </div>
-
-  <div id="carrinho-icone" onclick="abrirCarrinho()">
-    🛒 <span id="carrinho-count">0</span>
-  </div>
-
-  <!-- Painel do Carrinho — mesma lógica de janela modal do Info -->
-  <div id="carrinho-painel" onclick="fecharCarrinho()">
-    <div class="janela-conteudo" onclick="event.stopPropagation()">
-      <span class="janela-fechar" onclick="fecharCarrinho()">✕</span>
-      <h3>Seu pedido</h3>
-      <ul id="carrinho-lista"></ul>
-      <p id="carrinho-total"></p>
-      <button onclick="finalizarPedido()">💬 Finalizar pelo WhatsApp</button>
-      <button onclick="fecharCarrinho()">Fechar</button>
     </div>
   </div>
 
@@ -142,51 +131,92 @@
     </div>
   </header>
 
-  <!-- HERO / FRASE DE DESTAQUE — aparece antes dos buquês; ao rolar a
-       página é que os produtos entram. -->
-  <section class="hero-frase">
-    <p>
-      <!-- ✏️ Troque por uma frase que combine com a marca -->
-      Flores que contam histórias, momentos que se tornam memórias.
-    </p>
+  <!-- ABAS — perto da busca, no topo. Só o painel da aba ativa fica visível. -->
+  <nav class="abas-categorias" role="tablist" aria-label="Categorias de produtos">
+    <button class="aba ativa" data-aba="geral" role="tab" aria-selected="true">Geral</button>
+    <button class="aba" data-aba="buques" role="tab" aria-selected="false">🌹 Buquês</button>
+    <button class="aba" data-aba="glitter" role="tab" aria-selected="false">✨ Glitter</button>
+    <button class="aba" data-aba="personalizados" role="tab" aria-selected="false">🎨 Personalizados</button>
+    <button class="aba" data-aba="cestas" role="tab" aria-selected="false">🎁 Cestas</button>
+  </nav>
+
+  <!-- BANNER DE DESTAQUE — mensagem gira automaticamente (ver scripts.js) -->
+  <section class="hero-banner">
+    <div class="hero-banner-inner">
+      <p id="hero-banner-texto" class="hero-banner-texto">Flores que contam histórias, momentos que se tornam memórias.</p>
+    </div>
+  </section>
+
+  <!-- GERAL — mostra primeiro os mais vendidos, depois os buquês (em
+       ordem aleatória, já que ainda são poucos, dá pra mostrar todos).
+       Ao pesquisar, troca pra mostrar resultados de TODAS as categorias. -->
+  <section class="tab-painel" data-categoria="geral">
+    <div id="geral-padrao">
+      <h2 class="galeria-title">⭐ Mais Vendidos</h2>
+      <div class="grid-produtos" id="galeria-mais-vendidos">
+        <div id="noResultsMaisVendidos" class="no-results">Nenhum produto em destaque no momento 😢</div>
+      </div>
+
+      <h2 class="galeria-title">🌹 Conheça Nossos Buquês</h2>
+      <div class="grid-produtos" id="galeria-geral-buques">
+        <div id="noResultsGeralBuques" class="no-results">Nenhum buquê encontrado 😢</div>
+      </div>
+    </div>
+
+    <div id="geral-busca" class="oculto">
+      <h2 class="galeria-title">🔎 Resultados da busca</h2>
+      <div class="grid-produtos" id="galeria-geral-todos">
+        <div id="noResultsGeralTodos" class="no-results">Nenhum produto encontrado 😢</div>
+      </div>
+    </div>
   </section>
 
   <!-- BUQUÊS -->
-  <h2 class="galeria-title">🌹 Nossos Buquês</h2>
-  <p class="swipe-hint">← deslize para ver mais →</p>
-  <div class="carrossel-wrap" id="wrap-buques">
-    <button class="seta seta-esq" onclick="moverCarrossel('buques', -1)">&#8592;</button>
-    <div class="carrossel" id="galeria">
+  <section class="tab-painel oculto" data-categoria="buques">
+    <h2 class="galeria-title">🌹 Nossos Buquês</h2>
+    <div class="grid-produtos" id="galeria">
       <div id="noResults" class="no-results">Nenhum buquê encontrado 😢</div>
     </div>
-    <button class="seta seta-dir" onclick="moverCarrossel('buques', 1)">&#8594;</button>
-  </div>
+  </section>
 
   <!-- BUQUÊS COM GLITTER -->
-  <h2 class="galeria-title">✨ Buquês com Glitter</h2>
-  <p class="swipe-hint">← deslize para ver mais →</p>
-  <div class="carrossel-wrap" id="wrap-glitter">
-    <button class="seta seta-esq" onclick="moverCarrossel('glitter', -1)">&#8592;</button>
-    <div class="carrossel" id="galeria-glitter">
+  <section class="tab-painel oculto" data-categoria="glitter">
+    <h2 class="galeria-title">✨ Buquês com Glitter</h2>
+    <div class="grid-produtos" id="galeria-glitter">
+      <div id="noResultsGlitter" class="no-results">Nenhum buquê encontrado 😢</div>
     </div>
-    <button class="seta seta-dir" onclick="moverCarrossel('glitter', 1)">&#8594;</button>
-  </div>
+  </section>
 
   <!-- BUQUÊS PERSONALIZADOS -->
-  <h2 class="galeria-title">🎨 Buquês Personalizados</h2>
-  <p class="swipe-hint">← deslize para ver mais →</p>
-  <div class="carrossel-wrap" id="wrap-personalizados">
-    <button class="seta seta-esq" onclick="moverCarrossel('personalizados', -1)">&#8592;</button>
-    <div class="carrossel" id="galeria-personalizados">
+  <section class="tab-painel oculto" data-categoria="personalizados">
+    <h2 class="galeria-title">🎨 Buquês Personalizados</h2>
+    <div class="grid-produtos" id="galeria-personalizados">
+      <div id="noResultsPersonalizados" class="no-results">Nenhum buquê encontrado 😢</div>
     </div>
-    <button class="seta seta-dir" onclick="moverCarrossel('personalizados', 1)">&#8594;</button>
-  </div>
+  </section>
 
   <!-- CESTAS -->
-  <h2 class="galeria-title">🎁 Cestas Personalizadas</h2>
-  <div class="banner-cesta" id="galeria-cestas">
-    <div id="noResultsCestas" class="no-results">Nenhuma cesta encontrada 😢</div>
-  </div>
+  <section class="tab-painel oculto" data-categoria="cestas">
+    <h2 class="galeria-title">🎁 Cestas Personalizadas</h2>
+    <div class="banner-cesta" id="galeria-cestas">
+      <div id="noResultsCestas" class="no-results">Nenhuma cesta encontrada 😢</div>
+    </div>
+  </section>
+
+  <!-- CARRINHO — agora é uma aba própria em vez de janela modal -->
+  <section class="tab-painel oculto" data-categoria="carrinho">
+    <h2 class="galeria-title">🛒 Seu pedido</h2>
+    <div class="carrinho-conteudo">
+      <div class="carrinho-caixa">
+        <ul id="carrinho-lista"></ul>
+        <p id="carrinho-total"></p>
+        <div class="carrinho-acoes">
+          <button class="btn-principal" onclick="finalizarPedido()">💬 Finalizar pelo WhatsApp</button>
+          <button class="btn-secundario-carrinho" onclick="ativarAba('geral')">Continuar comprando</button>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <footer>
     © 2026 Studio Moreira — Buquês e Cestas Personalizados com Amor 🌸

@@ -9,10 +9,8 @@ const SUPABASE_KEY = 'sb_publishable_50YMqseOFR5Yma5AF1FCuQ_Y5xVaHBj';
 // Em conexões mais lentas ou instáveis (comum em celular), o script do
 // CDN do Supabase pode não terminar de carregar a tempo. Sem essa
 // checagem, "window.supabase" viria undefined e a linha abaixo travaria
-// com um erro fatal — o que impedia até o carrossel.js de continuar e
-// derrubava o fallback pro produtos.json que já existe lá embaixo.
-// Com a checagem, se o CDN falhar, supabaseClient fica null e o
-// carregarProdutos() cai direto no fallback local.
+// com um erro fatal. Com a checagem, se o CDN falhar, supabaseClient
+// fica null e o carregarProdutos() cai direto no fallback local.
 const supabaseClient = (typeof window.supabase !== 'undefined')
   ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
   : null;
@@ -33,7 +31,6 @@ document.addEventListener('keydown', e => {
     fecharLightbox();
     fecharProdutoModal();
     fecharInfo();
-    fecharCarrinho();
   }
 });
 
@@ -41,8 +38,7 @@ document.getElementById('lightbox-img').addEventListener('click', e => {
   e.stopPropagation();
 });
 
-// ── Painel de Informações — agora abre como janela modal (display:flex
-// pra centralizar o conteúdo), igual ao modal de produto. ──────────
+// ── Painel de Informações — janela modal (display:flex centraliza). ──
 function abrirInfo() {
   const painel = document.getElementById('info-painel');
   painel.style.display = painel.style.display === 'flex' ? 'none' : 'flex';
@@ -64,9 +60,19 @@ function montarItensHtml(itens) {
   return itens.map((item, i) => (i === 0 ? item : '+ ' + item)).join('<br>');
 }
 
-// Guarda todos os produtos carregados do produtos.json, indexados por id,
-// pra alimentar o modal de produto sem precisar refazer fetch nem
-// recuperar dados a partir do DOM.
+// Embaralha uma cópia do array (Fisher-Yates) — usado pra mostrar os
+// buquês em ordem aleatória na aba Geral.
+function embaralhar(array) {
+  const copia = [...array];
+  for (let i = copia.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copia[i], copia[j]] = [copia[j], copia[i]];
+  }
+  return copia;
+}
+
+// Guarda todos os produtos carregados, indexados por id, pra alimentar
+// o modal de produto sem precisar refazer fetch nem ler dados do DOM.
 let produtosCache = {};
 
 function criarCardHtml(p) {
@@ -111,29 +117,52 @@ function criarCardCestaHtml(p) {
     </div>`;
 }
 
+function inserirCardEm(containerId, html) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  const sentinela = container.querySelector('.no-results');
+  if (sentinela) {
+    sentinela.insertAdjacentHTML('beforebegin', html);
+  } else {
+    container.insertAdjacentHTML('beforeend', html);
+  }
+}
+
 function renderizarProdutos(produtos) {
   const containers = {
-    buques: document.getElementById('galeria'),
-    glitter: document.getElementById('galeria-glitter'),
-    personalizados: document.getElementById('galeria-personalizados'),
-    cestas: document.getElementById('galeria-cestas'),
+    buques: 'galeria',
+    glitter: 'galeria-glitter',
+    personalizados: 'galeria-personalizados',
+    cestas: 'galeria-cestas',
   };
 
   produtos.forEach(p => {
-    const container = containers[p.categoria];
-    if (!container) {
+    const containerId = containers[p.categoria];
+    if (!containerId) {
       console.warn('Categoria desconhecida no produtos.json:', p.categoria, p);
       return;
     }
     produtosCache[p.id] = p;
     const html = p.categoria === 'cestas' ? criarCardCestaHtml(p) : criarCardHtml(p);
-    const sentinela = container.querySelector('.no-results');
-    if (sentinela) {
-      sentinela.insertAdjacentHTML('beforebegin', html);
-    } else {
-      container.insertAdjacentHTML('beforeend', html);
+    inserirCardEm(containerId, html);
+
+    // Produto marcado como "mais vendido" no admin aparece também na
+    // aba Geral, sempre no estilo de card padrão (mesmo se for cesta),
+    // pra manter a grade uniforme.
+    if (p.maisVendido) {
+      inserirCardEm('galeria-mais-vendidos', criarCardHtml(p));
     }
   });
+
+  // Aba Geral também mostra os buquês em ordem aleatória (ainda são
+  // poucos, então dá pra mostrar todos em vez de só uma amostra).
+  const buques = embaralhar(produtos.filter(p => p.categoria === 'buques'));
+  buques.forEach(p => inserirCardEm('galeria-geral-buques', criarCardHtml(p)));
+
+  // Pool com TODO o catálogo (qualquer categoria), usado só quando a
+  // pessoa pesquisa estando na aba Geral — pra achar produtos de
+  // qualquer categoria, não só buquês/mais vendidos.
+  produtos.forEach(p => inserirCardEm('galeria-geral-todos', criarCardHtml(p)));
 }
 
 // Converte uma linha da tabela "produtos" do Supabase (nomes em
@@ -151,6 +180,7 @@ function mapearProdutoDoBanco(row) {
     imagemAlt: row.imagem_alt,
     itens: row.itens || [],
     preco: row.preco,
+    maisVendido: Boolean(row.mais_vendido),
   };
 }
 
@@ -221,87 +251,73 @@ document.getElementById('produto-modal-img').addEventListener('click', e => {
   abrirLightbox(e.target.src, e.target.alt);
 });
 
-const estadoCarrossel = {
-  buques:        { pagina: 0 },
-  glitter:       { pagina: 0 },
-  personalizados:{ pagina: 0 },
-};
+// ── Abas de categoria — só o painel da aba ativa fica visível. ─────
+const abas    = document.querySelectorAll('.aba');
+const paineis = document.querySelectorAll('.tab-painel');
 
-const idCarrossel = {
-  buques:        'galeria',
-  glitter:       'galeria-glitter',
-  personalizados:'galeria-personalizados',
-};
+function ativarAba(nomeAba) {
+  abas.forEach(btn => {
+    const ativa = btn.dataset.aba === nomeAba;
+    btn.classList.toggle('ativa', ativa);
+    btn.setAttribute('aria-selected', ativa ? 'true' : 'false');
+  });
+  paineis.forEach(painel => {
+    painel.classList.toggle('oculto', painel.dataset.categoria !== nomeAba);
+  });
 
-function isMobile() {
-  return window.innerWidth <= 750;
+  const barra = document.querySelector('.abas-categorias');
+  if (barra) window.scrollTo({ top: barra.offsetTop - 8, behavior: 'smooth' });
 }
 
-function cardsVisiveis(nome) {
-  return isMobile() ? 1 : 4;
+abas.forEach(btn => {
+  btn.addEventListener('click', () => ativarAba(btn.dataset.aba));
+});
+
+// ── Banner de destaque — mensagens rodando em loop com fade ────────
+const HERO_MENSAGENS = [
+  'Flores que contam histórias, momentos que se tornam memórias.',
+  '🌸 Peça pelo WhatsApp e receba com todo carinho em Franca-SP.',
+  '🎁 Aceitamos encomendas personalizadas — fale com a gente!',
+];
+let heroIndex = 0;
+
+function girarHeroBanner() {
+  const el = document.getElementById('hero-banner-texto');
+  if (!el) return;
+  el.classList.add('sumindo');
+  setTimeout(() => {
+    heroIndex = (heroIndex + 1) % HERO_MENSAGENS.length;
+    el.textContent = HERO_MENSAGENS[heroIndex];
+    el.classList.remove('sumindo');
+  }, 400);
 }
+setInterval(girarHeroBanner, 4500);
 
-function cardsAtivos(nome) {
-  const el = document.getElementById(idCarrossel[nome]);
-  return Array.from(el.children).filter(c => !c.classList.contains('hidden') && !c.classList.contains('no-results'));
-}
+// ── Busca ───────────────────────────────────────────────────────────
+// Config de todas as galerias que a busca precisa filtrar + o "sem
+// resultados" de cada uma. Adicionar uma galeria nova é só adicionar
+// uma linha aqui.
+const GALERIAS = [
+  { id: 'galeria-mais-vendidos',  seletorCard: '.card',       sentinelaId: 'noResultsMaisVendidos' },
+  { id: 'galeria-geral-buques',   seletorCard: '.card',       sentinelaId: 'noResultsGeralBuques' },
+  { id: 'galeria-geral-todos',    seletorCard: '.card',       sentinelaId: 'noResultsGeralTodos' },
+  { id: 'galeria',                seletorCard: '.card',       sentinelaId: 'noResults' },
+  { id: 'galeria-glitter',        seletorCard: '.card',       sentinelaId: 'noResultsGlitter' },
+  { id: 'galeria-personalizados', seletorCard: '.card',       sentinelaId: 'noResultsPersonalizados' },
+  { id: 'galeria-cestas',         seletorCard: '.card-cesta', sentinelaId: 'noResultsCestas' },
+];
 
-function moverCarrossel(nome, direcao) {
-  const estado = estadoCarrossel[nome];
-  const visiveis = cardsVisiveis(nome);
-  const total = cardsAtivos(nome).length;
-  const maxPagina = Math.max(0, Math.ceil(total / visiveis) - 1);
+const input = document.getElementById('searchInput');
 
-  estado.pagina = Math.min(Math.max(estado.pagina + direcao, 0), maxPagina);
-  renderCarrossel(nome);
-}
-
-function renderCarrossel(nome) {
-  const estado = estadoCarrossel[nome];
-  const ativos = cardsAtivos(nome);
-
-  if (isMobile()) {
-    ativos.forEach(card => { card.style.display = ''; });
-  } else {
-    const visiveis = cardsVisiveis(nome);
-    const inicio = estado.pagina * visiveis;
-    ativos.forEach((card, i) => {
-      card.style.display = (i >= inicio && i < inicio + visiveis) ? '' : 'none';
-    });
-  }
-
-  const wrap = document.getElementById('wrap-' + nome);
-  if (!wrap) return;
-  const [sEsq, sDir] = wrap.querySelectorAll('.seta');
-  const visiveis = cardsVisiveis(nome);
-  const maxPagina = Math.max(0, Math.ceil(ativos.length / visiveis) - 1);
-  sEsq.disabled = estado.pagina === 0;
-  sDir.disabled = estado.pagina >= maxPagina;
-}
-
-function renderTodos() {
-  renderCarrossel('buques');
-  renderCarrossel('glitter');
-  renderCarrossel('personalizados');
-}
-
-const input           = document.getElementById('searchInput');
-const noResults       = document.getElementById('noResults');
-const noResultsCestas = document.getElementById('noResultsCestas');
-
-// ── Busca colapsável: só a lupa, expande ao clicar ────────────────
 function toggleBusca() {
   const wrap = document.querySelector('.search-wrap');
   const vaiAbrir = !wrap.classList.contains('aberta');
   wrap.classList.toggle('aberta', vaiAbrir);
-  if (vaiAbrir) {
-    input.focus();
-  }
+  if (vaiAbrir) input.focus();
 }
 
 // Se o campo perder o foco vazio, recolhe de volta pra só o ícone —
-// mas só fecha se realmente não tem texto digitado, senão o usuário
-// perderia a busca sem querer.
+// mas só fecha se realmente não tem texto digitado.
 input.addEventListener('blur', () => {
   if (!input.value.trim()) {
     document.querySelector('.search-wrap').classList.remove('aberta');
@@ -317,37 +333,36 @@ function normalize(str) {
     .trim();
 }
 
-input.addEventListener('input', () => {
-  const terms = normalize(input.value).split(/\s+/).filter(Boolean);
-
-  ['galeria', 'galeria-glitter', 'galeria-personalizados'].forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.querySelectorAll('[data-title]').forEach(card => {
-      if (!terms.length) { card.classList.remove('hidden'); return; }
-      const texto = normalize(card.dataset.title) + ' ' + normalize(card.dataset.desc);
-      card.classList.toggle('hidden', !terms.some(t => texto.includes(t)));
-    });
-  });
-
-  document.querySelectorAll('#galeria-cestas .card-cesta[data-title]').forEach(card => {
+function filtrarGaleria({ id, seletorCard }, terms) {
+  const container = document.getElementById(id);
+  if (!container) return;
+  container.querySelectorAll(`${seletorCard}[data-title]`).forEach(card => {
     if (!terms.length) { card.classList.remove('hidden'); return; }
     const texto = normalize(card.dataset.title) + ' ' + normalize(card.dataset.desc);
     card.classList.toggle('hidden', !terms.some(t => texto.includes(t)));
   });
+}
 
-  const visiveisBuques = cardsAtivos('buques').length;
-  const visiveisCestas = document.querySelectorAll('#galeria-cestas .card-cesta[data-title]:not(.hidden)').length;
+function atualizarVazio({ id, seletorCard, sentinelaId }) {
+  const sentinela = document.getElementById(sentinelaId);
+  if (!sentinela) return;
+  const visiveis = document.querySelectorAll(`#${id} ${seletorCard}[data-title]:not(.hidden)`).length;
+  sentinela.classList.toggle('visible', visiveis === 0);
+}
 
-  noResults.classList.toggle('visible', visiveisBuques === 0 && terms.length > 0);
-  noResultsCestas.classList.toggle('visible', visiveisCestas === 0 && terms.length > 0);
+input.addEventListener('input', () => {
+  const terms = normalize(input.value).split(/\s+/).filter(Boolean);
+  GALERIAS.forEach(g => { filtrarGaleria(g, terms); atualizarVazio(g); });
 
-  estadoCarrossel.buques.pagina        = 0;
-  estadoCarrossel.glitter.pagina       = 0;
-  estadoCarrossel.personalizados.pagina= 0;
-  renderTodos();
+  // Na aba Geral: sem busca, mostra Mais Vendidos + Buquês aleatórios
+  // (visão padrão). Buscando, troca pra mostrar qualquer produto do
+  // catálogo inteiro que bater com o termo, não só buquês.
+  const buscando = terms.length > 0;
+  document.getElementById('geral-padrao').classList.toggle('oculto', buscando);
+  document.getElementById('geral-busca').classList.toggle('oculto', !buscando);
 });
 
+// ── Carrinho ─────────────────────────────────────────────────────
 const CARRINHO_STORAGE_KEY = 'studio-moreira:carrinho';
 
 function carregarCarrinhoSalvo() {
@@ -373,13 +388,18 @@ function salvarCarrinho() {
 
 let carrinho = carregarCarrinhoSalvo();
 
+function atualizarContadorCarrinho() {
+  document.getElementById('carrinho-count').textContent = carrinho.length;
+}
+
 function adicionarCarrinho(btn) {
   const nome      = btn.dataset.nome;
   const preco     = btn.dataset.preco;
   const descricao = btn.dataset.descricao || '';
   carrinho.push({ nome, preco, descricao });
   salvarCarrinho();
-  document.getElementById('carrinho-count').textContent = carrinho.length;
+  atualizarContadorCarrinho();
+  atualizarCarrinho();
 
   const original = btn.innerHTML;
   btn.innerHTML = '✓ Adicionado!';
@@ -390,21 +410,28 @@ function adicionarCarrinho(btn) {
   }, 1200);
 }
 
-// ── Painel do Carrinho — agora é sempre uma janela modal centralizada
-// (display:flex), em qualquer tamanho de tela. ────────────────────
-function abrirCarrinho() {
-  const painel = document.getElementById('carrinho-painel');
-  const vaiAbrir = painel.style.display !== 'flex';
-  painel.style.display = vaiAbrir ? 'flex' : 'none';
-  atualizarCarrinho();
-}
-
-function fecharCarrinho() {
-  document.getElementById('carrinho-painel').style.display = 'none';
-}
-
+// Carrinho agora é uma aba própria (renderizada sempre, escondida via
+// CSS quando não é a aba ativa) em vez de uma janela modal.
 function atualizarCarrinho() {
   const lista = document.getElementById('carrinho-lista');
+  const caixa = document.querySelector('.carrinho-caixa');
+  const acoes = document.querySelector('.carrinho-acoes');
+  if (!lista || !caixa) return;
+
+  if (carrinho.length === 0) {
+    lista.innerHTML = '';
+    document.getElementById('carrinho-total').textContent = '';
+    if (!caixa.querySelector('.carrinho-vazio')) {
+      lista.insertAdjacentHTML('beforebegin', '<p class="carrinho-vazio">Seu carrinho está vazio.</p>');
+    }
+    if (acoes) acoes.classList.add('oculto');
+    return;
+  }
+
+  const vazioMsg = caixa.querySelector('.carrinho-vazio');
+  if (vazioMsg) vazioMsg.remove();
+  if (acoes) acoes.classList.remove('oculto');
+
   lista.innerHTML = '';
   let total = 0;
 
@@ -426,7 +453,7 @@ function atualizarCarrinho() {
 function removerItem(i) {
   carrinho.splice(i, 1);
   salvarCarrinho();
-  document.getElementById('carrinho-count').textContent = carrinho.length;
+  atualizarContadorCarrinho();
   atualizarCarrinho();
 }
 
@@ -447,7 +474,7 @@ function finalizarPedido() {
 
   carrinho = [];
   salvarCarrinho();
-  document.getElementById('carrinho-count').textContent = carrinho.length;
+  atualizarContadorCarrinho();
   atualizarCarrinho();
 }
 
@@ -461,9 +488,11 @@ const observer = new IntersectionObserver((entries) => {
 }, { threshold: 0.1 });
 
 window.addEventListener('load', async () => {
-  document.getElementById('carrinho-count').textContent = carrinho.length;
+  atualizarContadorCarrinho();
+  atualizarCarrinho();
   await carregarProdutos();
-  renderTodos();
+
+  GALERIAS.forEach(atualizarVazio);
 
   document.querySelectorAll('.card, .card-cesta').forEach(el => {
     observer.observe(el);
@@ -477,5 +506,3 @@ window.addEventListener('load', async () => {
     });
   });
 });
-
-window.addEventListener('resize', renderTodos);

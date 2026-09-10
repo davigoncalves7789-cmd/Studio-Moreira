@@ -8,8 +8,15 @@
     "nomeCarrinho": "Buquê de rosas/com Ferrero Rocher",
     "imagem": "./img/2.jpeg",
     "imagemAlt": "Buquê de rosas vermelhas com Ferrero Rocher",
-    "itens": ["9 rosas simples", "18 Ferrero Rocher", "2 borboletas metálicas", "1 papel coreano", "1 laço de cetim"],
-    "preco": "150,00"
+    "itens": [
+      "9 rosas simples",
+      "18 Ferrero Rocher",
+      "2 borboletas metálicas",
+      "1 papel coreano",
+      "1 laço de cetim"
+    ],
+    "preco": "150,00",
+    "maisVendido": false
   },
   {
     "id": "buque-ferrero-120",
@@ -20,8 +27,15 @@
     "nomeCarrinho": "Buquê de rosas/com Ferrero Rocher",
     "imagem": "./img/3.jpg",
     "imagemAlt": "Buquê de rosas/com Ferrero Rocher",
-    "itens": ["10 rosas", "12 Ferrero Rocher", "1 borboleta metálica", "1 papel ceda", "1 laço de cetim"],
-    "preco": "120,00"
+    "itens": [
+      "10 rosas",
+      "12 Ferrero Rocher",
+      "1 borboleta metálica",
+      "1 papel ceda",
+      "1 laço de cetim"
+    ],
+    "preco": "120,00",
+    "maisVendido": false
   },
   {
     "id": "buque-flores-mistas",
@@ -32,8 +46,14 @@
     "nomeCarrinho": "Buquê de flores mistas",
     "imagem": "./img/5.jpg",
     "imagemAlt": "Buquê de flores mistas",
-    "itens": ["8 flores coloridas", "2 borboletas metálicas", "1 papel ceda", "1 laço de cetim"],
-    "preco": "50,73"
+    "itens": [
+      "8 flores coloridas",
+      "2 borboletas metálicas",
+      "1 papel ceda",
+      "1 laço de cetim"
+    ],
+    "preco": "50,73",
+    "maisVendido": false
   },
   {
     "id": "buque-ouro-branco",
@@ -44,8 +64,16 @@
     "nomeCarrinho": "Buquê de ouro branco",
     "imagem": "./img/8.jpg",
     "imagemAlt": "Buquê de ouro branco",
-    "itens": ["18 rosas", "3 lírios", "18 bom bom", "2 borboletas metálicas", "1 papel coreano", "1 laço de cetim"],
-    "preco": "196,50"
+    "itens": [
+      "18 rosas",
+      "3 lírios",
+      "18 bom bom",
+      "2 borboletas metálicas",
+      "1 papel coreano",
+      "1 laço de cetim"
+    ],
+    "preco": "196,50",
+    "maisVendido": false
   },
   {
     "id": "buque-1-girassol",
@@ -56,8 +84,16 @@
     "nomeCarrinho": "Buquê de 1/girassol",
     "imagem": "./img/21.jpeg",
     "imagemAlt": "Buquê de 1/girassol",
-    "itens": ["7 rosas", "1 lírios", "Fio de fada", "2 borboletas metálicas", "papel coreano", "1 laço de cetim"],
-    "preco": "56,50"
+    "itens": [
+      "7 rosas",
+      "1 lírios",
+      "Fio de fada",
+      "2 borboletas metálicas",
+      "papel coreano",
+      "1 laço de cetim"
+    ],
+    "preco": "56,50",
+    "maisVendido": false
   },
   {
     "id": "buque-7-girassois",
@@ -68,8 +104,13 @@
     "nomeCarrinho": "Buquê de 7/girassois",
     "imagem": "./img/17.jpeg",
     "imagemAlt": "Buquê de 7/girassois",
-    "itens": ["7 girassois", "papel coreano", "1 laço de cetim"],
-    "preco": "48,60"
+    "itens": [
+      "7 girassois",
+      "papel coreano",
+      "1 laço de cetim"
+    ],
+    "preco": "48,60",
+    "maisVendido": false
   },
   {
     "id": "buque-7-rosas",
@@ -80,8 +121,13 @@
     "nomeCarrinho": "Buquê de 7/rosas",
     "imagem": "./img/22.jpeg",
     "imagemAlt": "Buquê de 7/rosas",
-    "itens": ["7 rosas", "papel coreano", "1 laço de cetim"],
-    "preco": "56,50"
+    "itens": [
+      "7 rosas",
+      "papel coreano",
+      "1 laço de cetim"
+    ],
+    "preco": "56,50",
+    "maisVendido": false
   },
   {
     "id": "buque-30-rosas-vermelhas",
@@ -92,8 +138,13 @@
     "nomeCarrinho": "Buquê de 30/rosas vermelhas",
     "imagem": "./img/16.jpeg",
     "imagemAlt": "Buquê de 30/rosas vermelhas",
-    "itens": ["30 rosas", "papel coreano", "1 laço de cetim"],
-    "preco": "186,50"
+    "itens": [
+      "30 rosas",
+      "papel coreano",
+      "1 laço de cetim"
+    ],
+    "preco": "186,50",
+    "maisVendido": false
   },
   {
     "id": "buque-30-borboleta",
@@ -104,8 +155,14 @@
     "nomeCarrinho": "Buquê de 30/borboleta",
     "imagem": "./img/9.jpg",
     "imagemAlt": "Buquê de 30/borboleta",
-    "itens": ["30 borboletasborda azul claro", "led", "papel coreano", "1 laço de cetim"],
-    "preco": "66,20"
+    "itens": [
+      "30 borboletasborda azul claro",
+      "led",
+      "papel coreano",
+      "1 laço de cetim"
+    ],
+    "preco": "66,20",
+    "maisVendido": false
   },
   {
     "id": "glitter-30-rosas-vermelhas",
@@ -116,8 +173,13 @@
     "nomeCarrinho": "Buquê de 30/rosas vermelhas",
     "imagem": "./img/12.jpg",
     "imagemAlt": "Buquê de 30/rosas vermelhas",
-    "itens": ["30 rosas com glitter", "papel coreano", "1 laço de cetim"],
-    "preco": "162,17"
+    "itens": [
+      "30 rosas com glitter",
+      "papel coreano",
+      "1 laço de cetim"
+    ],
+    "preco": "162,17",
+    "maisVendido": false
   },
   {
     "id": "glitter-11-rosas",
@@ -128,8 +190,15 @@
     "nomeCarrinho": "Buquê de 11/rosas com glitter",
     "imagem": "./img/13.jpg",
     "imagemAlt": "Buquê de 11/rosas com glitter",
-    "itens": ["11 rosas com glitter", "sempre viva", "led", "papel coreano", "1 laço de cetim"],
-    "preco": "80,75"
+    "itens": [
+      "11 rosas com glitter",
+      "sempre viva",
+      "led",
+      "papel coreano",
+      "1 laço de cetim"
+    ],
+    "preco": "80,75",
+    "maisVendido": false
   },
   {
     "id": "glitter-30-rosas-ouro-branco",
@@ -140,8 +209,14 @@
     "nomeCarrinho": "Buquê de rosas vermelhas com glitter/ ouro branco",
     "imagem": "./img/19.jpeg",
     "imagemAlt": "Buquê de rosas vermelhas com glitter/ ouro branco",
-    "itens": ["30 rosas com glitter", "laço personalizada", "papel coreano", "1 laço de cetim"],
-    "preco": "237,07"
+    "itens": [
+      "30 rosas com glitter",
+      "laço personalizada",
+      "papel coreano",
+      "1 laço de cetim"
+    ],
+    "preco": "237,07",
+    "maisVendido": false
   },
   {
     "id": "glitter-15-rosas",
@@ -152,8 +227,15 @@
     "nomeCarrinho": "Buquê de 15/rosas com glitter",
     "imagem": "./img/15.jpeg",
     "imagemAlt": "Buquê de 15/rosas com glitter",
-    "itens": ["15 rosas c/ glitter", "laço personalizada", "ouro branco", "papel coreano", "1 laço de cetim"],
-    "preco": "150,00"
+    "itens": [
+      "15 rosas c/ glitter",
+      "laço personalizada",
+      "ouro branco",
+      "papel coreano",
+      "1 laço de cetim"
+    ],
+    "preco": "150,00",
+    "maisVendido": false
   },
   {
     "id": "glitter-7-rosas",
@@ -164,8 +246,13 @@
     "nomeCarrinho": "Buquê de 7/rosas com glitter",
     "imagem": "./img/7.jpeg",
     "imagemAlt": "Buquê de 7/rosas com glitter",
-    "itens": ["7 rosas c/ glitter", "papel coreano", "1 laço de cetim"],
-    "preco": "30,00"
+    "itens": [
+      "7 rosas c/ glitter",
+      "papel coreano",
+      "1 laço de cetim"
+    ],
+    "preco": "30,00",
+    "maisVendido": false
   },
   {
     "id": "pers-stith",
@@ -176,8 +263,14 @@
     "nomeCarrinho": "Buquê de 30/rosas com glitter",
     "imagem": "./img/4.jpg",
     "imagemAlt": "Buquê de 30/rosas com glitter",
-    "itens": ["30 rosas c/ glitter", "pelúcia", "papel coreano", "1 laço de cetim"],
-    "preco": "209,30"
+    "itens": [
+      "30 rosas c/ glitter",
+      "pelúcia",
+      "papel coreano",
+      "1 laço de cetim"
+    ],
+    "preco": "209,30",
+    "maisVendido": false
   },
   {
     "id": "pers-corinthians",
@@ -188,8 +281,14 @@
     "nomeCarrinho": "Buquê de 15 flores com glitter",
     "imagem": "./img/6.jpg",
     "imagemAlt": "Buquê de 15 flores com glitter",
-    "itens": ["15 flores c/ glitter", "fotos personalizadas", "papel coreano", "1 papel de ceda"],
-    "preco": "84,58"
+    "itens": [
+      "15 flores c/ glitter",
+      "fotos personalizadas",
+      "papel coreano",
+      "1 papel de ceda"
+    ],
+    "preco": "84,58",
+    "maisVendido": false
   },
   {
     "id": "pers-30-rosas-fotos",
@@ -200,8 +299,15 @@
     "nomeCarrinho": "Buquê de 30/rosas com glitter",
     "imagem": "./img/14.jpeg",
     "imagemAlt": "Buquê de 30/rosas com glitter",
-    "itens": ["30 rosas c/ glitter", "fotos personalizadas", "laço personalizado", "papel coreano", "1 laço de cetim"],
-    "preco": "77,00"
+    "itens": [
+      "30 rosas c/ glitter",
+      "fotos personalizadas",
+      "laço personalizado",
+      "papel coreano",
+      "1 laço de cetim"
+    ],
+    "preco": "77,00",
+    "maisVendido": false
   },
   {
     "id": "pers-princesa-glitter",
@@ -212,8 +318,16 @@
     "nomeCarrinho": "Buquê de princesa",
     "imagem": "./img/20.jpeg",
     "imagemAlt": "Buquê de princesa",
-    "itens": ["10 rosas c/ glitter", "1 fotos personalizadas", "1 laço personalizado", "1 ceda de coração", "papel coreano", "1 laço de cetim"],
-    "preco": "60,00"
+    "itens": [
+      "10 rosas c/ glitter",
+      "1 fotos personalizadas",
+      "1 laço personalizado",
+      "1 ceda de coração",
+      "papel coreano",
+      "1 laço de cetim"
+    ],
+    "preco": "60,00",
+    "maisVendido": false
   },
   {
     "id": "pers-girassois",
@@ -224,8 +338,14 @@
     "nomeCarrinho": "Buquê de girassois",
     "imagem": "./img/18.jpeg",
     "imagemAlt": "Buquê de girassois",
-    "itens": ["7 girassois", "foto personalizada", "1 papel ceda", "1 laço de cetim"],
-    "preco": "53,34"
+    "itens": [
+      "7 girassois",
+      "foto personalizada",
+      "1 papel ceda",
+      "1 laço de cetim"
+    ],
+    "preco": "53,34",
+    "maisVendido": false
   },
   {
     "id": "pers-homem-aranha",
@@ -236,8 +356,14 @@
     "nomeCarrinho": "Buquê homem aranha",
     "imagem": "./img/10.jpg",
     "imagemAlt": "Buquê homem aranha",
-    "itens": ["15 rosas c/ glitter", "1 pelúcia", "1 papel coreano", "1 laço de cetim"],
-    "preco": "176,00"
+    "itens": [
+      "15 rosas c/ glitter",
+      "1 pelúcia",
+      "1 papel coreano",
+      "1 laço de cetim"
+    ],
+    "preco": "176,00",
+    "maisVendido": false
   },
   {
     "id": "pers-money",
@@ -248,8 +374,14 @@
     "nomeCarrinho": "Buquê money",
     "imagem": "./img/11.jpg",
     "imagemAlt": "Buquê money",
-    "itens": ["5 rosas c/ glitter", "foto de dinheiro fake", "1 papel coreano", "1 laço de cetim"],
-    "preco": "77,00"
+    "itens": [
+      "5 rosas c/ glitter",
+      "foto de dinheiro fake",
+      "1 papel coreano",
+      "1 laço de cetim"
+    ],
+    "preco": "77,00",
+    "maisVendido": false
   },
   {
     "id": "pers-princesa-15rosas",
@@ -260,8 +392,14 @@
     "nomeCarrinho": "Buquê de princesa",
     "imagem": "./img/23.jpeg",
     "imagemAlt": "Buquê de princesa",
-    "itens": ["15 rosas", "foto personalizada", "papel coreano", "1 laço de cetim"],
-    "preco": "168,17"
+    "itens": [
+      "15 rosas",
+      "foto personalizada",
+      "papel coreano",
+      "1 laço de cetim"
+    ],
+    "preco": "168,17",
+    "maisVendido": false
   },
   {
     "id": "cesta-especial",
@@ -272,8 +410,20 @@
     "nomeCarrinho": "Cesta Especial com pelúcia e chocolates",
     "imagem": "./img/cesta1.jpeg",
     "imagemAlt": "Cesta Especial",
-    "itens": ["Cesta de coração", "pelúcia", "2 Kinder Bueno", "7 barras Kit Kat", "2 Kit Kat normal", "2 barrinhas de Nutella", "12 Raffaello", "1 bolo de pote", "3 Snickers", "4 barras de chocolate"],
-    "preco": "200,00"
+    "itens": [
+      "Cesta de coração",
+      "pelúcia",
+      "2 Kinder Bueno",
+      "7 barras Kit Kat",
+      "2 Kit Kat normal",
+      "2 barrinhas de Nutella",
+      "12 Raffaello",
+      "1 bolo de pote",
+      "3 Snickers",
+      "4 barras de chocolate"
+    ],
+    "preco": "200,00",
+    "maisVendido": false
   },
   {
     "id": "cesta-tradicional",
@@ -284,7 +434,18 @@
     "nomeCarrinho": "Cesta Tradicional com chocolates",
     "imagem": "./img/cesta2.jpeg",
     "imagemAlt": "Cesta Tradicional",
-    "itens": ["Cesta tradicional", "1 Ruffles", "1 caixa Biz", "1 barra Biz", "1 Suflair", "11 caixas Lacta", "1 Ouro Branco", "1 Sonho de Valsa", "2 Kit Kat"],
-    "preco": "160,00"
+    "itens": [
+      "Cesta tradicional",
+      "1 Ruffles",
+      "1 caixa Biz",
+      "1 barra Biz",
+      "1 Suflair",
+      "11 caixas Lacta",
+      "1 Ouro Branco",
+      "1 Sonho de Valsa",
+      "2 Kit Kat"
+    ],
+    "preco": "160,00",
+    "maisVendido": false
   }
 ]
