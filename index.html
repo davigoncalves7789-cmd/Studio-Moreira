@@ -20,6 +20,8 @@
     <meta property="og:locale" content="pt_BR">
 
     <link rel="canonical" href="https://studio-moreira.vercel.app">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>%F0%9F%8C%B8</text></svg>">
+    <meta name="theme-color" content="#6b1029">
 
     <script type="application/ld+json">
     {
@@ -115,8 +117,8 @@
         </div>
       </div>
       <div class="brand-center">
-        <div class="brand-title">Studio Moreira</div>
-        <div class="brand-subtitle">Personalização e Design</div>
+        <h1 class="brand-title">Studio Moreira</h1>
+        <p class="brand-subtitle">Personalização e Design</p>
       </div>
       <div class="logo">
         <img src="./img/logo studio moreira.jpeg" alt="Logo">
@@ -124,10 +126,13 @@
     </div>
     <div class="search-wrap">
       <button id="search-toggle" class="search-icone" onclick="toggleBusca()" aria-label="Abrir busca">🔍</button>
-      <input type="text"
-             id="searchInput"
-             class="busca-input"
-             placeholder="Digite o buquê que você quer (ex: rosa, vermelho, corinthians…)" />
+      <div class="busca-input-wrap">
+        <input type="text"
+               id="searchInput"
+               class="busca-input"
+               placeholder="Digite o buquê que você quer (ex: rosa, vermelho, corinthians…)" />
+        <button id="clear-search" class="clear-search oculto" type="button" aria-label="Limpar busca">✕</button>
+      </div>
     </div>
   </header>
 
@@ -146,6 +151,10 @@
       <p id="hero-banner-texto" class="hero-banner-texto">Flores que contam histórias, momentos que se tornam memórias.</p>
     </div>
   </section>
+
+  <div id="erro-carregamento" class="erro-carregamento oculto" role="alert">
+    ⚠️ Não conseguimos carregar os produtos agora. Tente novamente em alguns instantes.
+  </div>
 
   <!-- GERAL — mostra primeiro os mais vendidos, depois os buquês (em
        ordem aleatória, já que ainda são poucos, dá pra mostrar todos).

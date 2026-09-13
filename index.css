@@ -102,6 +102,7 @@ header {
   color: var(--color-wine);
   letter-spacing: .3px;
   line-height: 1.15;
+  margin: 0;
 }
 .brand-subtitle {
   font-family: var(--font-body);
@@ -110,7 +111,7 @@ header {
   text-transform: uppercase;
   letter-spacing: 2px;
   color: var(--color-ink-faint);
-  margin-top: 4px;
+  margin: 4px 0 0;
 }
 
 .logo {
@@ -158,34 +159,77 @@ header {
   transform: scale(1.05);
 }
 
-.busca-input {
+.busca-input-wrap {
+  position: relative;
   width: 0;
   max-width: 0;
   opacity: 0;
-  padding: 0;
-  margin: 0;
-  border: none;
+  transition: max-width .35s ease, opacity .25s ease;
+}
+.search-wrap:not(.aberta) .busca-input-wrap {
   overflow: hidden;
+}
+.search-wrap.aberta .busca-input-wrap {
+  max-width: 460px;
+  width: 100%;
+  opacity: 1;
+}
+
+.busca-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 11px 40px 11px 20px;
+  margin: 0;
   border-radius: 30px;
   font-family: var(--font-body);
   font-size: 14.5px;
   background: var(--color-surface);
   color: var(--color-ink);
   outline: none;
-  transition: max-width .35s ease, opacity .25s ease, padding .35s ease, border-color .2s, box-shadow .2s;
-}
-.search-wrap.aberta .busca-input {
-  max-width: 460px;
-  width: 100%;
-  opacity: 1;
-  padding: 11px 20px;
   border: 1px solid var(--color-rose-soft);
+  transition: border-color .2s, box-shadow .2s;
 }
-.search-wrap.aberta .busca-input:focus {
+.busca-input:focus {
   border-color: var(--color-rose);
   box-shadow: 0 0 0 3px rgba(184, 92, 122, .15);
 }
 .busca-input::placeholder { color: var(--color-ink-faint); }
+
+.clear-search {
+  position: absolute;
+  right: 7px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 26px;
+  height: 26px;
+  border: none;
+  background: var(--color-rose-soft);
+  color: var(--color-wine);
+  border-radius: 50%;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .2s;
+}
+.clear-search:hover { background: var(--color-rose-soft-2); }
+
+/* ── Banner de erro global — diferente do "não encontrado" de cada
+   categoria: aparece só quando o carregamento falha de verdade
+   (Supabase E o backup local também falharam). ── */
+.erro-carregamento {
+  max-width: 700px;
+  margin: 16px auto 0;
+  padding: 14px 20px;
+  border-radius: var(--radius-md);
+  background: #fdecea;
+  border: 1px solid #f3c2bd;
+  color: #8a2f24;
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  text-align: center;
+}
 
 /* ══════════════════════════════════════════════════════════════
    ABAS DE CATEGORIA — barra perto da busca; só o painel da aba
@@ -647,13 +691,47 @@ header {
 #carrinho-lista li {
   font-family: var(--font-body);
   font-size: 13px;
-  padding: 6px 0;
+  padding: 8px 0;
   border-bottom: 1px dashed var(--color-rose-soft);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
+.carrinho-item-nome {
+  flex: 1;
+  min-width: 0;
+}
+.carrinho-item-qtd {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+.carrinho-item-qtd button {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid var(--color-rose-soft);
+  background: var(--color-surface);
+  color: var(--color-wine);
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+}
+.carrinho-item-qtd button:hover { background: var(--color-rose-soft); }
+.carrinho-item-remover {
+  background: none;
+  border: none;
+  color: #b3261e;
+  cursor: pointer;
+  font-size: 15px;
+  padding: 2px 4px;
+  flex-shrink: 0;
+}
+.carrinho-item-remover:hover { opacity: .7; }
 #carrinho-total {
   font-family: var(--font-display);
   font-size: 17px;
@@ -675,12 +753,30 @@ header {
   box-shadow: var(--shadow-sm);
 }
 .carrinho-vazio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
   text-align: center;
   color: var(--color-ink-faint);
   font-family: var(--font-body);
   font-size: 14px;
   padding: 20px 0 28px;
 }
+.carrinho-vazio p { margin: 0; }
+.carrinho-vazio button {
+  padding: 10px 22px;
+  border-radius: 30px;
+  border: none;
+  background: var(--color-rose-soft);
+  color: var(--color-wine);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background .2s;
+}
+.carrinho-vazio button:hover { background: var(--color-rose-soft-2); }
 .carrinho-acoes {
   display: flex;
   flex-direction: column;
@@ -993,7 +1089,7 @@ footer {
   .links a.whatsapp{ font-size: 11px; }
 
   .search-wrap { margin-top: 6px; }
-  .search-wrap.aberta .busca-input { max-width: calc(100vw - 100px); }
+  .search-wrap.aberta .busca-input-wrap { max-width: calc(100vw - 100px); }
 
   .card {
     border-radius: var(--radius-md);

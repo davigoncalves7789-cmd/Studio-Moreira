@@ -75,14 +75,22 @@ function embaralhar(array) {
 // o modal de produto sem precisar refazer fetch nem ler dados do DOM.
 let produtosCache = {};
 
+const CATEGORIA_LABEL = {
+  buques: 'Buquês',
+  glitter: 'Glitter',
+  personalizados: 'Personalizados',
+  cestas: 'Cestas',
+};
+
 function criarCardHtml(p) {
   return `
     <div class="card"
          data-title="${escapeAttr(p.nomeBusca)}"
-         data-desc="${escapeAttr(p.descBusca)}">
+         data-desc="${escapeAttr(p.descBusca)}"
+         data-categoria="${escapeAttr(CATEGORIA_LABEL[p.categoria] || p.categoria)}">
       <div class="card-title">${p.nomeExibicao}</div>
       <div class="card-body">
-        <img src="${p.imagem}" alt="${escapeAttr(p.imagemAlt)}" class="produto-clicavel" data-produto-id="${escapeAttr(p.id)}" />
+        <img src="${p.imagem}" alt="${escapeAttr(p.imagemAlt)}" loading="lazy" decoding="async" class="produto-clicavel" data-produto-id="${escapeAttr(p.id)}" />
         <div class="card-desc">
           <span class="preco">Valor: R$ ${p.preco}</span>
           <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
@@ -100,10 +108,11 @@ function criarCardCestaHtml(p) {
   return `
     <div class="card-cesta"
          data-title="${escapeAttr(p.nomeBusca)}"
-         data-desc="${escapeAttr(p.descBusca)}">
+         data-desc="${escapeAttr(p.descBusca)}"
+         data-categoria="${escapeAttr(CATEGORIA_LABEL[p.categoria] || p.categoria)}">
       <h2>${p.nomeExibicao}</h2>
       <div class="card-body-cesta">
-        <img src="${p.imagem}" alt="${escapeAttr(p.imagemAlt)}" class="produto-clicavel" data-produto-id="${escapeAttr(p.id)}">
+        <img src="${p.imagem}" alt="${escapeAttr(p.imagemAlt)}" loading="lazy" decoding="async" class="produto-clicavel" data-produto-id="${escapeAttr(p.id)}">
         <div class="card-desc-cesta">
           <span class="preco">Valor: R$ ${p.preco}</span>
           <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
@@ -184,6 +193,24 @@ function mapearProdutoDoBanco(row) {
   };
 }
 
+// Estados de carregamento — mostra "Carregando..." nas galerias enquanto
+// busca os dados, depois restaura a mensagem real de "não encontrado"
+// de cada uma. Evita a vitrine parecer vazia por um instante e confundir
+// "ainda carregando" com "não tem produto".
+function iniciarEstadoCarregando() {
+  document.querySelectorAll('.no-results').forEach(el => {
+    el.dataset.msgVazio = el.textContent;
+    el.textContent = 'Carregando produtos...';
+    el.classList.add('visible');
+  });
+}
+
+function finalizarEstadoCarregando() {
+  document.querySelectorAll('.no-results').forEach(el => {
+    if (el.dataset.msgVazio) el.textContent = el.dataset.msgVazio;
+  });
+}
+
 async function carregarProdutos() {
   try {
     if (!supabaseClient) throw new Error('Cliente Supabase indisponível (CDN não carregou a tempo)');
@@ -208,7 +235,12 @@ async function carregarProdutos() {
       const produtos = await resp.json();
       renderizarProdutos(produtos);
     } catch (err2) {
+      // Supabase E o backup local falharam os dois — isso sim é um erro
+      // de verdade (não "sem produtos"), então avisamos o cliente com
+      // uma mensagem própria em vez de deixar tudo em silêncio.
       console.error('Erro também ao carregar produtos.json de backup:', err2);
+      const banner = document.getElementById('erro-carregamento');
+      if (banner) banner.classList.remove('oculto');
     }
   }
 }
@@ -308,6 +340,17 @@ const GALERIAS = [
 ];
 
 const input = document.getElementById('searchInput');
+const btnLimparBusca = document.getElementById('clear-search');
+
+function atualizarBotaoLimpar() {
+  btnLimparBusca.classList.toggle('oculto', !input.value.trim());
+}
+
+btnLimparBusca.addEventListener('click', () => {
+  input.value = '';
+  input.dispatchEvent(new Event('input'));
+  input.focus();
+});
 
 function toggleBusca() {
   const wrap = document.querySelector('.search-wrap');
@@ -338,7 +381,7 @@ function filtrarGaleria({ id, seletorCard }, terms) {
   if (!container) return;
   container.querySelectorAll(`${seletorCard}[data-title]`).forEach(card => {
     if (!terms.length) { card.classList.remove('hidden'); return; }
-    const texto = normalize(card.dataset.title) + ' ' + normalize(card.dataset.desc);
+    const texto = normalize(card.dataset.title) + ' ' + normalize(card.dataset.desc) + ' ' + normalize(card.dataset.categoria || '');
     card.classList.toggle('hidden', !terms.some(t => texto.includes(t)));
   });
 }
@@ -353,6 +396,7 @@ function atualizarVazio({ id, seletorCard, sentinelaId }) {
 input.addEventListener('input', () => {
   const terms = normalize(input.value).split(/\s+/).filter(Boolean);
   GALERIAS.forEach(g => { filtrarGaleria(g, terms); atualizarVazio(g); });
+  atualizarBotaoLimpar();
 
   // Na aba Geral: sem busca, mostra Mais Vendidos + Buquês aleatórios
   // (visão padrão). Buscando, troca pra mostrar qualquer produto do
@@ -371,7 +415,14 @@ function carregarCarrinhoSalvo() {
     if (!salvo) return [];
     const dados = JSON.parse(salvo);
     if (!Array.isArray(dados)) return [];
-    return dados.filter(item => item && typeof item.nome === 'string' && typeof item.preco === 'string');
+    return dados
+      .filter(item => item && typeof item.nome === 'string' && typeof item.preco === 'string')
+      .map(item => ({
+        ...item,
+        // Carrinhos salvos antes dessa versão não tinham quantidade —
+        // tratamos como 1 pra não quebrar quem já tinha item salvo.
+        quantidade: Number.isInteger(item.quantidade) && item.quantidade > 0 ? item.quantidade : 1,
+      }));
   } catch (err) {
     console.warn('Não foi possível ler o carrinho salvo, iniciando vazio:', err);
     return [];
@@ -389,14 +440,22 @@ function salvarCarrinho() {
 let carrinho = carregarCarrinhoSalvo();
 
 function atualizarContadorCarrinho() {
-  document.getElementById('carrinho-count').textContent = carrinho.length;
+  const total = carrinho.reduce((s, i) => s + i.quantidade, 0);
+  document.getElementById('carrinho-count').textContent = total;
 }
 
 function adicionarCarrinho(btn) {
   const nome      = btn.dataset.nome;
   const preco     = btn.dataset.preco;
   const descricao = btn.dataset.descricao || '';
-  carrinho.push({ nome, preco, descricao });
+
+  const existente = carrinho.find(i => i.nome === nome && i.preco === preco);
+  if (existente) {
+    existente.quantidade += 1;
+  } else {
+    carrinho.push({ nome, preco, descricao, quantidade: 1 });
+  }
+
   salvarCarrinho();
   atualizarContadorCarrinho();
   atualizarCarrinho();
@@ -422,7 +481,12 @@ function atualizarCarrinho() {
     lista.innerHTML = '';
     document.getElementById('carrinho-total').textContent = '';
     if (!caixa.querySelector('.carrinho-vazio')) {
-      lista.insertAdjacentHTML('beforebegin', '<p class="carrinho-vazio">Seu carrinho está vazio.</p>');
+      lista.insertAdjacentHTML('beforebegin',
+        `<div class="carrinho-vazio">
+          <p>Seu carrinho está vazio.</p>
+          <button type="button" onclick="ativarAba('geral')">Ver produtos</button>
+        </div>`
+      );
     }
     if (acoes) acoes.classList.add('oculto');
     return;
@@ -437,17 +501,32 @@ function atualizarCarrinho() {
 
   carrinho.forEach((item, i) => {
     const valor = parseFloat(item.preco.replace(',', '.'));
-    total += valor;
+    const subtotal = valor * item.quantidade;
+    total += subtotal;
     lista.innerHTML += `
       <li>
-        ${item.nome}
-        <span>R$ ${item.preco}</span>
-        <button onclick="removerItem(${i})" style="background:none;border:none;color:red;cursor:pointer;font-size:16px;">✕</button>
+        <span class="carrinho-item-nome">${item.nome}</span>
+        <span class="carrinho-item-qtd">
+          <button onclick="alterarQuantidade(${i}, -1)" aria-label="Diminuir quantidade">−</button>
+          ${item.quantidade}
+          <button onclick="alterarQuantidade(${i}, 1)" aria-label="Aumentar quantidade">+</button>
+        </span>
+        <span>R$ ${subtotal.toFixed(2).replace('.', ',')}</span>
+        <button onclick="removerItem(${i})" class="carrinho-item-remover" aria-label="Remover item">✕</button>
       </li>`;
   });
 
   document.getElementById('carrinho-total').textContent =
     `Total: R$ ${total.toFixed(2).replace('.', ',')}`;
+}
+
+function alterarQuantidade(i, delta) {
+  const item = carrinho[i];
+  if (!item) return;
+  item.quantidade = Math.max(1, item.quantidade + delta);
+  salvarCarrinho();
+  atualizarContadorCarrinho();
+  atualizarCarrinho();
 }
 
 function removerItem(i) {
@@ -458,17 +537,27 @@ function removerItem(i) {
 }
 
 function finalizarPedido() {
-  if (carrinho.length === 0) return alert('Seu carrinho está vazio!');
+  // Garante que só entram na mensagem itens realmente válidos (nome,
+  // preço numérico e quantidade positiva) — proteção defensiva caso
+  // algum dado salvo esteja corrompido.
+  const itensValidos = carrinho.filter(i =>
+    i && i.nome && i.quantidade > 0 && !isNaN(parseFloat(String(i.preco).replace(',', '.')))
+  );
 
-  let mensagem = 'Olá! Gostaria de fazer um pedido:\n\n';
-  carrinho.forEach(item => {
-    mensagem += `• ${item.nome} — R$ ${item.preco}\n`;
-    if (item.descricao) mensagem += `  (${item.descricao})\n`;
-    mensagem += '\n';
+  if (itensValidos.length === 0) return alert('Seu carrinho está vazio!');
+
+  let mensagem = 'Studio Moreira — Novo pedido\n\nProdutos:\n';
+  let total = 0;
+
+  itensValidos.forEach(item => {
+    const valor = parseFloat(item.preco.replace(',', '.'));
+    const subtotal = valor * item.quantidade;
+    total += subtotal;
+    mensagem += `• ${item.nome} — ${item.quantidade}x — R$ ${subtotal.toFixed(2).replace('.', ',')}\n`;
+    if (item.descricao) mensagem += `   (${item.descricao})\n`;
   });
 
-  const total = carrinho.reduce((s, i) => s + parseFloat(i.preco.replace(',', '.')), 0);
-  mensagem += `Total: R$ ${total.toFixed(2).replace('.', ',')}`;
+  mensagem += `\nTotal: R$ ${total.toFixed(2).replace('.', ',')}`;
 
   window.open(`https://wa.me/5516993414588?text=${encodeURIComponent(mensagem)}`, '_blank');
 
@@ -490,8 +579,10 @@ const observer = new IntersectionObserver((entries) => {
 window.addEventListener('load', async () => {
   atualizarContadorCarrinho();
   atualizarCarrinho();
-  await carregarProdutos();
 
+  iniciarEstadoCarregando();
+  await carregarProdutos();
+  finalizarEstadoCarregando();
   GALERIAS.forEach(atualizarVazio);
 
   document.querySelectorAll('.card, .card-cesta').forEach(el => {
