@@ -236,7 +236,10 @@ document.getElementById('form-produto').addEventListener('submit', async (e) => 
     carregarListaProdutos();
   } catch (err) {
     console.error('Erro ao salvar produto:', err);
-    erroEl.textContent = 'Não consegui salvar. Tenta de novo em alguns segundos.';
+    // Mostra o motivo real na tela (não só "algo deu errado") — assim dá
+    // pra diagnosticar sem precisar abrir o Console do navegador.
+    const detalhe = err?.message || err?.error_description || 'erro desconhecido';
+    erroEl.textContent = `Não consegui salvar (${detalhe}).`;
     btn.disabled = false;
     btn.textContent = editando ? 'Salvar alterações' : 'Adicionar produto';
   }
