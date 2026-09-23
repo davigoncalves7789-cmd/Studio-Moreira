@@ -80,6 +80,7 @@ const CATEGORIA_LABEL = {
   glitter: 'Glitter',
   personalizados: 'Personalizados',
   cestas: 'Cestas',
+  escritorio: 'Escritório',
 };
 
 function criarCardHtml(p) {
@@ -143,6 +144,7 @@ function renderizarProdutos(produtos) {
     glitter: 'galeria-glitter',
     personalizados: 'galeria-personalizados',
     cestas: 'galeria-cestas',
+    escritorio: 'galeria-escritorio',
   };
 
   produtos.forEach(p => {
@@ -337,6 +339,7 @@ const GALERIAS = [
   { id: 'galeria-glitter',        seletorCard: '.card',       sentinelaId: 'noResultsGlitter' },
   { id: 'galeria-personalizados', seletorCard: '.card',       sentinelaId: 'noResultsPersonalizados' },
   { id: 'galeria-cestas',         seletorCard: '.card-cesta', sentinelaId: 'noResultsCestas' },
+  { id: 'galeria-escritorio',     seletorCard: '.card',       sentinelaId: 'noResultsEscritorio' },
 ];
 
 const input = document.getElementById('searchInput');
@@ -559,7 +562,7 @@ function finalizarPedido() {
 
   mensagem += `\nTotal: R$ ${total.toFixed(2).replace('.', ',')}`;
 
-  window.open(`https://wa.me/5516993414588?text=${encodeURIComponent(mensagem)}`, '_blank');
+  window.open(`https://wa.me/5516992631717?text=${encodeURIComponent(mensagem)}`, '_blank');
 
   carrinho = [];
   salvarCarrinho();

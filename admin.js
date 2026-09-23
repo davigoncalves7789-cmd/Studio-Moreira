@@ -251,6 +251,7 @@ const NOMES_CATEGORIA = {
   glitter: 'Buquês com Glitter',
   personalizados: 'Buquês Personalizados',
   cestas: 'Cestas Personalizadas',
+  escritorio: 'Escritório',
 };
 
 async function carregarListaProdutos() {
