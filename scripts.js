@@ -174,6 +174,65 @@ function renderizarProdutos(produtos) {
   // pessoa pesquisa estando na aba Geral — pra achar produtos de
   // qualquer categoria, não só buquês/mais vendidos.
   produtos.forEach(p => inserirCardEm('galeria-geral-todos', criarCardHtml(p)));
+
+  montarVitrineGiratoria(produtos);
+}
+
+// ── Vitrine giratória — banner da aba Geral que troca de produto
+// sozinho, invertendo o lado da foto/preço a cada troca. Prioriza os
+// "mais vendidos"; se nenhum estiver marcado ainda, mostra uma
+// amostra aleatória do catálogo pra não ficar vazio.
+let vitrineProdutos = [];
+let vitrineIndex = 0;
+
+function montarVitrineGiratoria(produtos) {
+  const destaques = produtos.filter(p => p.maisVendido);
+  vitrineProdutos = destaques.length > 0 ? destaques : embaralhar(produtos).slice(0, 6);
+  if (vitrineProdutos.length === 0) return;
+
+  renderizarSlideVitrine();
+  if (vitrineProdutos.length > 1) {
+    setInterval(trocarSlideVitrine, 5000);
+  }
+}
+
+function renderizarSlideVitrine() {
+  const slide = document.getElementById('vitrine-slide');
+  const dots = document.getElementById('vitrine-dots');
+  if (!slide) return;
+
+  const p = vitrineProdutos[vitrineIndex];
+  const invertida = vitrineIndex % 2 === 1;
+
+  slide.className = 'vitrine-slide';
+  slide.style.backgroundImage = `url('${p.imagem}')`;
+  slide.onclick = () => abrirProdutoModal(p.id);
+  slide.innerHTML = `
+    <div class="vitrine-slide-overlay${invertida ? ' invertida' : ''}">
+      <div class="vitrine-slide-texto">
+        <span class="vitrine-slide-nome">${p.nomeExibicao}</span>
+        <span class="vitrine-slide-preco">R$ ${p.preco}</span>
+        <span class="vitrine-slide-cta">Ver detalhes →</span>
+      </div>
+    </div>
+  `;
+
+  if (dots) {
+    dots.innerHTML = vitrineProdutos
+      .map((_, i) => `<span class="${i === vitrineIndex ? 'ativo' : ''}"></span>`)
+      .join('');
+  }
+}
+
+function trocarSlideVitrine() {
+  const slide = document.getElementById('vitrine-slide');
+  if (!slide) return;
+  slide.classList.add('trocando');
+  setTimeout(() => {
+    vitrineIndex = (vitrineIndex + 1) % vitrineProdutos.length;
+    renderizarSlideVitrine();
+    slide.classList.remove('trocando');
+  }, 400);
 }
 
 // Converte uma linha da tabela "produtos" do Supabase (nomes em
