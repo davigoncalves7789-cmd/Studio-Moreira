@@ -82,12 +82,18 @@
           </label>
 
           <label>
-            Foto do produto
+            Foto principal (a que aparece no catálogo)
             <input type="file" id="produto-foto" accept="image/*">
           </label>
           <p id="produto-foto-aviso" class="mensagem-erro oculto">Editando: a foto atual é mantida se você não escolher uma nova.</p>
 
           <img id="produto-preview" class="preview-foto oculto" alt="Pré-visualização">
+
+          <label>
+            Outros ângulos (opcional, até 5 fotos)
+            <input type="file" id="produto-fotos-extras" accept="image/*" multiple>
+          </label>
+          <div id="produto-extras-lista" class="extras-lista oculto"></div>
 
           <p id="produto-erro" class="mensagem-erro"></p>
           <p id="produto-sucesso" class="mensagem-sucesso"></p>

@@ -16,7 +16,8 @@
       "1 laço de cetim"
     ],
     "preco": "150,00",
-    "maisVendido": false
+    "maisVendido": false,
+    "imagensExtras": []
   },
   {
     "id": "buque-ferrero-120",
@@ -35,7 +36,8 @@
       "1 laço de cetim"
     ],
     "preco": "120,00",
-    "maisVendido": false
+    "maisVendido": false,
+    "imagensExtras": []
   },
   {
     "id": "buque-flores-mistas",
@@ -53,7 +55,8 @@
       "1 laço de cetim"
     ],
     "preco": "50,73",
-    "maisVendido": false
+    "maisVendido": false,
+    "imagensExtras": []
   },
   {
     "id": "buque-ouro-branco",
@@ -73,7 +76,8 @@
       "1 laço de cetim"
     ],
     "preco": "196,50",
-    "maisVendido": false
+    "maisVendido": false,
+    "imagensExtras": []
   },
   {
     "id": "buque-1-girassol",
@@ -93,7 +97,8 @@
       "1 laço de cetim"
     ],
     "preco": "56,50",
-    "maisVendido": false
+    "maisVendido": false,
+    "imagensExtras": []
   },
   {
     "id": "buque-7-girassois",
@@ -110,7 +115,8 @@
       "1 laço de cetim"
     ],
     "preco": "48,60",
-    "maisVendido": false
+    "maisVendido": false,
+    "imagensExtras": []
   },
   {
     "id": "buque-7-rosas",
@@ -127,7 +133,8 @@
       "1 laço de cetim"
     ],
     "preco": "56,50",
-    "maisVendido": false
+    "maisVendido": false,
+    "imagensExtras": []
   },
   {
     "id": "buque-30-rosas-vermelhas",
@@ -144,7 +151,8 @@
       "1 laço de cetim"
     ],
     "preco": "186,50",
-    "maisVendido": false
+    "maisVendido": false,
+    "imagensExtras": []
   },
   {
     "id": "buque-30-borboleta",
@@ -162,7 +170,8 @@
       "1 laço de cetim"
     ],
     "preco": "66,20",
-    "maisVendido": false
+    "maisVendido": false,
+    "imagensExtras": []
   },
   {
     "id": "glitter-30-rosas-vermelhas",
@@ -179,7 +188,8 @@
       "1 laço de cetim"
     ],
     "preco": "162,17",
-    "maisVendido": false
+    "maisVendido": false,
+    "imagensExtras": []
   },
   {
     "id": "glitter-11-rosas",
@@ -198,7 +208,8 @@
       "1 laço de cetim"
     ],
     "preco": "80,75",
-    "maisVendido": false
+    "maisVendido": false,
+    "imagensExtras": []
   },
   {
     "id": "glitter-30-rosas-ouro-branco",
@@ -216,7 +227,8 @@
       "1 laço de cetim"
     ],
     "preco": "237,07",
-    "maisVendido": false
+    "maisVendido": false,
+    "imagensExtras": []
   },
   {
     "id": "glitter-15-rosas",
@@ -235,7 +247,8 @@
       "1 laço de cetim"
     ],
     "preco": "150,00",
-    "maisVendido": false
+    "maisVendido": false,
+    "imagensExtras": []
   },
   {
     "id": "glitter-7-rosas",
@@ -252,7 +265,8 @@
       "1 laço de cetim"
     ],
     "preco": "30,00",
-    "maisVendido": false
+    "maisVendido": false,
+    "imagensExtras": []
   },
   {
     "id": "pers-stith",
@@ -270,7 +284,8 @@
       "1 laço de cetim"
     ],
     "preco": "209,30",
-    "maisVendido": false
+    "maisVendido": false,
+    "imagensExtras": []
   },
   {
     "id": "pers-corinthians",
@@ -288,7 +303,8 @@
       "1 papel de ceda"
     ],
     "preco": "84,58",
-    "maisVendido": false
+    "maisVendido": false,
+    "imagensExtras": []
   },
   {
     "id": "pers-30-rosas-fotos",
@@ -307,7 +323,8 @@
       "1 laço de cetim"
     ],
     "preco": "77,00",
-    "maisVendido": false
+    "maisVendido": false,
+    "imagensExtras": []
   },
   {
     "id": "pers-princesa-glitter",
@@ -327,7 +344,8 @@
       "1 laço de cetim"
     ],
     "preco": "60,00",
-    "maisVendido": false
+    "maisVendido": false,
+    "imagensExtras": []
   },
   {
     "id": "pers-girassois",
@@ -345,7 +363,8 @@
       "1 laço de cetim"
     ],
     "preco": "53,34",
-    "maisVendido": false
+    "maisVendido": false,
+    "imagensExtras": []
   },
   {
     "id": "pers-homem-aranha",
@@ -363,7 +382,8 @@
       "1 laço de cetim"
     ],
     "preco": "176,00",
-    "maisVendido": false
+    "maisVendido": false,
+    "imagensExtras": []
   },
   {
     "id": "pers-money",
@@ -381,7 +401,8 @@
       "1 laço de cetim"
     ],
     "preco": "77,00",
-    "maisVendido": false
+    "maisVendido": false,
+    "imagensExtras": []
   },
   {
     "id": "pers-princesa-15rosas",
@@ -399,7 +420,8 @@
       "1 laço de cetim"
     ],
     "preco": "168,17",
-    "maisVendido": false
+    "maisVendido": false,
+    "imagensExtras": []
   },
   {
     "id": "cesta-especial",
@@ -423,7 +445,8 @@
       "4 barras de chocolate"
     ],
     "preco": "200,00",
-    "maisVendido": false
+    "maisVendido": false,
+    "imagensExtras": []
   },
   {
     "id": "cesta-tradicional",
@@ -446,6 +469,7 @@
       "2 Kit Kat"
     ],
     "preco": "160,00",
-    "maisVendido": false
+    "maisVendido": false,
+    "imagensExtras": []
   }
 ]

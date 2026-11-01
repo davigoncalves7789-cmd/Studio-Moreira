@@ -185,6 +185,45 @@ button:disabled { background: #b7a2a7; cursor: default; transform: none; }
   flex-shrink: 0;
 }
 
+/* ── Fotos extras (outros ângulos) ── */
+.extras-lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.extra-item {
+  position: relative;
+  width: 76px;
+  height: 76px;
+}
+.extra-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid rgba(91, 15, 42, .15);
+  background: #efe4e0;
+}
+.extra-item.nova img { border-color: #5b0f2a; }
+.extra-item .extra-remover {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border-radius: 50%;
+  font-size: 11px;
+  letter-spacing: 0;
+  line-height: 1;
+  background: #b3261e;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.extra-item .extra-remover:hover { background: #8f1d17; transform: none; }
+
 .badge-mais-vendido {
   color: #b8860b;
   font-weight: 600;

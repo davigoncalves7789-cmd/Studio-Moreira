@@ -284,144 +284,165 @@ header {
    ══════════════════════════════════════════════════════════════ */
 
 /* ══════════════════════════════════════════════════════════════
-   VITRINE GIRATÓRIA — banner que troca de produto sozinho: foto de
-   um lado, preço do outro, invertendo o lado a cada troca (ver
-   scripts.js — a classe .invertida faz o espelhamento).
+   VITRINE GIRATÓRIA — cartão que troca de produto sozinho: foto de um
+   lado, detalhes do outro, espelhando o lado a cada troca (a classe
+   .invertida faz isso — ver renderizarSlideVitrine em scripts.js).
    ══════════════════════════════════════════════════════════════ */
 .vitrine-giratoria {
   max-width: 900px;
-  margin: 20px auto 0;
+  margin: 18px auto 0;
   padding: 0 20px;
 }
 .vitrine-slide {
-  position: relative;
-  min-height: 260px;
+  display: flex;
+  height: 420px;
   border-radius: var(--radius-lg);
   overflow: hidden;
+  background: var(--color-surface);
+  border: 1px solid var(--color-rose-soft);
   box-shadow: var(--shadow-md);
   cursor: pointer;
-  background-color: var(--color-bg);
-  background-size: cover;
-  /* "center 35%" mostra mais a parte de cima da foto — na maioria dos
-     buquês é onde as flores ficam, então corta menos o que importa
-     do que "center center" cortaria. Ainda depende da foto original. */
-  background-position: center 35%;
-  transition: opacity .4s ease;
+  transition: opacity .4s ease, box-shadow .25s ease;
 }
+.vitrine-slide:hover { box-shadow: var(--shadow-lg); }
+.vitrine-slide.invertida { flex-direction: row-reverse; }
 .vitrine-slide.trocando { opacity: 0; }
 
-/* Texto por cima da própria foto, com degradê pra garantir leitura —
-   em vez de uma caixa sólida do lado, que era só metade do banner. */
-.vitrine-slide-overlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding: 22px 28px;
-  background: linear-gradient(to right,
-    rgba(107, 16, 41, 0) 0%,
-    rgba(107, 16, 41, 0) 38%,
-    rgba(107, 16, 41, .6) 65%,
-    rgba(107, 16, 41, .92) 100%);
+.vitrine-foto {
+  flex: 0 0 52%;
+  overflow: hidden;
+  background: var(--color-rose-soft-2);
 }
-.vitrine-slide-overlay.invertida {
-  justify-content: flex-start;
-  background: linear-gradient(to left,
-    rgba(107, 16, 41, 0) 0%,
-    rgba(107, 16, 41, 0) 38%,
-    rgba(107, 16, 41, .6) 65%,
-    rgba(107, 16, 41, .92) 100%);
+/* "center 30%" mostra mais a parte de cima da foto — nos buquês é
+   onde as flores ficam, então corta menos o que importa. */
+.vitrine-foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+  display: block;
+  transition: transform .6s ease;
 }
+.vitrine-slide:hover .vitrine-foto img { transform: scale(1.04); }
 
-.vitrine-slide-texto {
+.vitrine-info {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  max-width: 230px;
-  color: #fff;
-  text-align: right;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 36px 40px;
 }
-.vitrine-slide-overlay.invertida .vitrine-slide-texto { text-align: left; }
-
+.vitrine-categoria {
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--color-rose-soft-2);
+  color: var(--color-wine);
+  font-size: 10.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.4px;
+}
 .vitrine-slide-nome {
   font-family: var(--font-display);
-  font-size: 19px;
-  line-height: 1.3;
+  font-weight: 600;
+  font-size: 34px;
+  line-height: 1.15;
+  color: var(--color-wine-dark);
 }
 .vitrine-slide-preco {
   font-family: var(--font-body);
   font-weight: 700;
-  font-size: 23px;
+  font-size: 26px;
+  color: var(--color-wine-dark);
 }
 .vitrine-slide-cta {
-  font-size: 11px;
+  margin-top: 6px;
+  padding: 12px 24px;
+  border-radius: 4px;
+  background: var(--color-wine-dark);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 1px;
-  opacity: .9;
+  transition: background .2s ease;
 }
+.vitrine-slide:hover .vitrine-slide-cta { background: var(--color-wine-hover); }
 
 .vitrine-dots {
   display: flex;
   justify-content: center;
-  gap: 6px;
-  margin-top: 10px;
+  gap: 7px;
+  margin-top: 14px;
 }
 .vitrine-dots span {
   width: 7px;
   height: 7px;
   border-radius: 50%;
   background: var(--color-rose-soft);
-  transition: background .2s;
+  transition: background .2s, width .2s;
 }
-.vitrine-dots span.ativo { background: var(--color-wine); }
+.vitrine-dots span.ativo {
+  width: 20px;
+  border-radius: 999px;
+  background: var(--color-wine);
+}
 
 @media (max-width: 700px) {
-  /* Continua foto inteira + degradê, só ajustando tamanhos — o bug
-     de "só aparece o preço" era da divisão em duas colunas antiga,
-     que não existe mais. */
-  .vitrine-slide { min-height: 220px; }
-  .vitrine-slide-overlay { padding: 16px 18px; }
-  .vitrine-slide-texto { max-width: 62%; }
-  .vitrine-slide-nome { font-size: 16px; }
-  .vitrine-slide-preco { font-size: 19px; }
+  .vitrine-giratoria { padding: 0 14px; }
+  .vitrine-slide,
+  .vitrine-slide.invertida {
+    flex-direction: column;
+    height: auto;
+  }
+  .vitrine-foto { flex: none; height: 270px; }
+  .vitrine-info { align-items: flex-start; gap: 10px; padding: 18px 20px 22px; }
+  .vitrine-slide-nome { font-size: 25px; }
+  .vitrine-slide-preco { font-size: 22px; }
+  .vitrine-slide-cta { width: 100%; text-align: center; }
 }
 
+/* ══════════════════════════════════════════════════════════════
+   FRASE DE DESTAQUE — linha discreta entre as abas e a vitrine; o
+   texto roda entre mensagens via JS (classe .sumindo faz o fade).
+   ══════════════════════════════════════════════════════════════ */
 .hero-banner {
-  margin: 20px auto 0;
+  margin: 22px auto 0;
   max-width: 900px;
   padding: 0 20px;
 }
 .hero-banner-inner {
-  background: linear-gradient(120deg, var(--color-wine) 0%, var(--color-rose-dark) 50%, var(--color-wine) 100%);
-  background-size: 200% 200%;
-  animation: hero-gradiente 7s ease infinite;
-  border-radius: var(--radius-lg);
-  padding: 26px 32px;
-  box-shadow: var(--shadow-md);
-  text-align: center;
-  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
-@keyframes hero-gradiente {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+.hero-banner-inner::before,
+.hero-banner-inner::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--color-rose-soft);
 }
 .hero-banner-texto {
+  margin: 0;
+  max-width: 78%;
   font-family: var(--font-display);
   font-style: italic;
   font-weight: 500;
-  font-size: 22px;
-  line-height: 1.5;
-  color: #fff;
-  margin: 0;
+  font-size: 21px;
+  line-height: 1.4;
+  text-align: center;
+  color: var(--color-wine);
   transition: opacity .4s ease, transform .4s ease;
 }
 .hero-banner-texto.sumindo { opacity: 0; transform: translateY(-6px); }
 @media (max-width: 750px) {
-  .hero-banner { margin-top: 14px; padding: 0 14px; }
-  .hero-banner-inner { padding: 20px 20px; }
-  .hero-banner-texto { font-size: 16.5px; }
+  .hero-banner { margin-top: 16px; padding: 0 14px; }
+  .hero-banner-inner { gap: 12px; }
+  .hero-banner-texto { max-width: 86%; font-size: 16px; }
 }
 
 /* ── Título das seções ── */
@@ -953,211 +974,6 @@ header {
   cursor: pointer;
   line-height: 1;
   user-select: none;
-}
-
-/* ── Modal de produto ── */
-.produto-modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(45, 27, 34, .58);
-  backdrop-filter: blur(2px);
-  z-index: 2100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  box-sizing: border-box;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity .25s ease, visibility .25s ease;
-}
-.produto-modal-overlay.ativo {
-  opacity: 1;
-  visibility: visible;
-}
-
-.produto-modal {
-  background: var(--color-surface);
-  border-radius: var(--radius-sm);
-  max-width: 860px;
-  width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
-  display: flex;
-  position: relative;
-  box-shadow: var(--shadow-lg);
-  transform: translateY(14px) scale(.98);
-  transition: transform .25s ease;
-}
-.produto-modal-overlay.ativo .produto-modal {
-  transform: translateY(0) scale(1);
-}
-
-.produto-modal-fechar {
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: rgba(255,255,255,.85);
-  font-size: 15px;
-  cursor: pointer;
-  color: var(--color-wine-dark);
-  line-height: 1;
-  z-index: 2;
-  transition: background .2s ease;
-}
-.produto-modal-fechar:hover { background: #fff; }
-
-.produto-modal-img {
-  flex: 1 1 46%;
-  min-width: 0;
-  background: var(--color-rose-soft-2);
-}
-.produto-modal-img img {
-  width: 100%;
-  height: 100%;
-  min-height: 300px;
-  object-fit: cover;
-  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
-  cursor: zoom-in;
-  display: block;
-}
-
-.produto-modal-info {
-  flex: 1 1 54%;
-  padding: 44px 40px 36px;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  box-sizing: border-box;
-  font-family: var(--font-body);
-}
-.produto-modal-info h2 {
-  margin: 0;
-  color: var(--color-wine-dark);
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 30px;
-  line-height: 1.25;
-  letter-spacing: .2px;
-}
-.produto-modal-desc {
-  font-size: 13.5px;
-  line-height: 1.85;
-  color: var(--color-ink-muted);
-  letter-spacing: .1px;
-}
-
-.produto-modal-avaliacoes {
-  border-top: 1px solid var(--color-rose-soft);
-  border-bottom: 1px solid var(--color-rose-soft);
-  padding: 16px 0;
-}
-.produto-modal-avaliacoes h4 {
-  margin: 0 0 6px;
-  color: var(--color-wine);
-  font-family: var(--font-body);
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1.4px;
-}
-.produto-modal-avaliacoes .em-breve {
-  margin: 0;
-  font-size: 13px;
-  color: var(--color-ink-faint);
-  font-family: var(--font-display);
-  font-style: italic;
-}
-
-.produto-modal-rodape {
-  margin-top: auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-  padding-top: 4px;
-}
-.produto-modal-rodape-preco {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.produto-modal-rodape-preco .rotulo {
-  font-size: 10.5px;
-  text-transform: uppercase;
-  letter-spacing: 1.4px;
-  color: var(--color-ink-faint);
-}
-.produto-modal-preco {
-  font-family: var(--font-body);
-  font-size: 28px;
-  font-weight: 700;
-  color: var(--color-wine-dark);
-}
-.produto-modal-rodape .btn-adicionar {
-  margin-top: 0;
-  padding: 13px 26px;
-  font-size: 12.5px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  border-radius: 3px;
-  background: var(--color-wine-dark);
-  box-shadow: 0 6px 16px rgba(74, 11, 29, .28);
-  transition: background .2s ease, transform .2s ease, box-shadow .2s ease;
-}
-.produto-modal-rodape .btn-adicionar:hover {
-  background: var(--color-wine-hover);
-  transform: translateY(-1px);
-  box-shadow: 0 10px 22px rgba(74, 11, 29, .34);
-}
-.produto-modal-rodape .btn-adicionar:disabled {
-  background: var(--color-success);
-  box-shadow: none;
-  transform: none;
-}
-
-@media (max-width: 750px) {
-  .produto-modal {
-    flex-direction: column;
-    max-height: 88vh;
-  }
-  .produto-modal-img img {
-    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
-    height: 210px;
-    min-height: 0;
-    /* "cover" cortava fotos em pé (retrato) de um jeito estranho —
-       "contain" mostra a foto inteira, com o fundo rosa claro do
-       wrapper preenchendo as sobras em vez de cortar o produto. */
-    object-fit: contain;
-  }
-  .produto-modal-info {
-    padding: 16px 20px 18px;
-    gap: 10px;
-  }
-  .produto-modal-info h2 { font-size: 22px; }
-  .produto-modal-desc { font-size: 13px; line-height: 1.65; }
-
-  /* O botão de comprar precisa aparecer logo após a descrição, sem
-     rolar — então ele sobe (order 2) e a seção de avaliações (que é
-     só um aviso "em breve") desce pra depois dele (order 3). O layout
-     em coluna e a ordem visual mudam; o HTML continua o mesmo. */
-  .produto-modal-rodape {
-    order: 2;
-    margin-top: 4px;
-  }
-  .produto-modal-avaliacoes {
-    order: 3;
-    padding: 10px 0 0;
-    border-bottom: none;
-  }
 }
 
 footer {

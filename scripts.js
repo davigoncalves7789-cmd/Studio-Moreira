@@ -29,7 +29,6 @@ function fecharLightbox() {
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     fecharLightbox();
-    fecharProdutoModal();
     fecharInfo();
   }
 });
@@ -56,10 +55,6 @@ function escapeAttr(str) {
     .replace(/>/g, '&gt;');
 }
 
-function montarItensHtml(itens) {
-  return itens.map((item, i) => (i === 0 ? item : '+ ' + item)).join('<br>');
-}
-
 // Embaralha uma cópia do array (Fisher-Yates) — usado pra mostrar os
 // buquês em ordem aleatória na aba Geral.
 function embaralhar(array) {
@@ -70,10 +65,6 @@ function embaralhar(array) {
   }
   return copia;
 }
-
-// Guarda todos os produtos carregados, indexados por id, pra alimentar
-// o modal de produto sem precisar refazer fetch nem ler dados do DOM.
-let produtosCache = {};
 
 const CATEGORIA_LABEL = {
   buques: 'Buquês',
@@ -153,7 +144,6 @@ function renderizarProdutos(produtos) {
       console.warn('Categoria desconhecida no produtos.json:', p.categoria, p);
       return;
     }
-    produtosCache[p.id] = p;
     const html = p.categoria === 'cestas' ? criarCardCestaHtml(p) : criarCardHtml(p);
     inserirCardEm(containerId, html);
 
@@ -204,16 +194,19 @@ function renderizarSlideVitrine() {
   const p = vitrineProdutos[vitrineIndex];
   const invertida = vitrineIndex % 2 === 1;
 
-  slide.className = 'vitrine-slide';
-  slide.style.backgroundImage = `url('${p.imagem}')`;
-  slide.onclick = () => abrirProdutoModal(p.id);
+  slide.className = 'vitrine-slide' + (invertida ? ' invertida' : '');
+  slide.onclick = () => abrirProduto(p.id);
+  // Foto de verdade (<img>) em vez de imagem de fundo: dá pra ter alt
+  // e o recorte é controlado só pelo CSS (object-position).
   slide.innerHTML = `
-    <div class="vitrine-slide-overlay${invertida ? ' invertida' : ''}">
-      <div class="vitrine-slide-texto">
-        <span class="vitrine-slide-nome">${p.nomeExibicao}</span>
-        <span class="vitrine-slide-preco">R$ ${p.preco}</span>
-        <span class="vitrine-slide-cta">Ver detalhes →</span>
-      </div>
+    <div class="vitrine-foto">
+      <img src="${escapeAttr(p.imagem)}" alt="${escapeAttr(p.imagemAlt || p.nomeExibicao)}">
+    </div>
+    <div class="vitrine-info">
+      <span class="vitrine-categoria">${p.maisVendido ? '⭐ Mais vendido' : escapeAttr(CATEGORIA_LABEL[p.categoria] || p.categoria)}</span>
+      <span class="vitrine-slide-nome">${escapeAttr(p.nomeExibicao)}</span>
+      <span class="vitrine-slide-preco">R$ ${escapeAttr(p.preco)}</span>
+      <span class="vitrine-slide-cta">Ver detalhes →</span>
     </div>
   `;
 
@@ -306,47 +299,18 @@ async function carregarProdutos() {
   }
 }
 
-// ── Modal de produto (estilo Shopee) ──────────────────────────────
-function abrirProdutoModal(id) {
-  const p = produtosCache[id];
-  if (!p) {
-    console.warn('Produto não encontrado no cache:', id);
-    return;
-  }
-
-  const imgEl = document.getElementById('produto-modal-img');
-  imgEl.src = p.imagem;
-  imgEl.alt = p.imagemAlt || p.nomeExibicao;
-
-  document.getElementById('produto-modal-titulo').textContent = p.nomeExibicao;
-  document.getElementById('produto-modal-desc').innerHTML = montarItensHtml(p.itens);
-  document.getElementById('produto-modal-preco').textContent = `R$ ${p.preco}`;
-
-  const btnComprar = document.getElementById('produto-modal-btn-comprar');
-  btnComprar.dataset.nome = p.nomeCarrinho;
-  btnComprar.dataset.preco = p.preco;
-  btnComprar.dataset.descricao = p.descBusca;
-  btnComprar.disabled = false;
-  btnComprar.innerHTML = 'Adicionar ao carrinho';
-  btnComprar.onclick = () => adicionarCarrinho(btnComprar);
-
-  document.getElementById('produto-modal-overlay').classList.add('ativo');
-  document.body.style.overflow = 'hidden';
+// ── Página do produto ──────────────────────────────────────────────
+// Clicar num produto abre produto.html?id=... (página própria, com
+// galeria de fotos, descrição e botões), em vez de um popup.
+function abrirProduto(id) {
+  window.location.href = 'produto.html?id=' + encodeURIComponent(id);
 }
-
-function fecharProdutoModal() {
-  document.getElementById('produto-modal-overlay').classList.remove('ativo');
-  document.body.style.overflow = '';
-}
-
-document.getElementById('produto-modal-img').addEventListener('click', e => {
-  e.stopPropagation();
-  abrirLightbox(e.target.src, e.target.alt);
-});
 
 // ── Abas de categoria — só o painel da aba ativa fica visível. ─────
 const abas    = document.querySelectorAll('.aba');
 const paineis = document.querySelectorAll('.tab-painel');
+
+const ABA_STORAGE_KEY = 'studio-moreira:aba';
 
 function ativarAba(nomeAba) {
   abas.forEach(btn => {
@@ -357,6 +321,12 @@ function ativarAba(nomeAba) {
   paineis.forEach(painel => {
     painel.classList.toggle('oculto', painel.dataset.categoria !== nomeAba);
   });
+
+  // Guarda a aba (menos o carrinho) pra, ao voltar da página de um
+  // produto, a pessoa cair na mesma categoria em que estava.
+  if (nomeAba !== 'carrinho') {
+    try { sessionStorage.setItem(ABA_STORAGE_KEY, nomeAba); } catch (err) { /* sem storage: ignora */ }
+  }
 
   const barra = document.querySelector('.abas-categorias');
   if (barra) window.scrollTo({ top: barra.offsetTop - 8, behavior: 'smooth' });
@@ -651,11 +621,22 @@ window.addEventListener('load', async () => {
     observer.observe(el);
   });
 
+  // produto.html manda pra cá com #carrinho; senão, volta pra última aba.
+  let abaInicial = null;
+  if (location.hash === '#carrinho') {
+    abaInicial = 'carrinho';
+  } else {
+    try { abaInicial = sessionStorage.getItem(ABA_STORAGE_KEY); } catch (err) { /* ignora */ }
+  }
+  if (abaInicial && abaInicial !== 'geral' && document.querySelector(`.aba[data-aba="${abaInicial}"], .tab-painel[data-categoria="${abaInicial}"]`)) {
+    ativarAba(abaInicial);
+  }
+
   document.querySelectorAll('.produto-clicavel').forEach(img => {
     img.style.cursor = 'pointer';
     img.addEventListener('click', e => {
       e.stopPropagation();
-      abrirProdutoModal(img.dataset.produtoId);
+      abrirProduto(img.dataset.produtoId);
     });
   });
 });

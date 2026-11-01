@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Produto — Studio Moreira</title>
+  <meta id="meta-descricao" name="description" content="Buquês e cestas personalizados em Franca SP. Encomende pelo WhatsApp!">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#6b1029">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>%F0%9F%8C%B8</text></svg>">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="produto.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+</head>
+<body>
+
+  <div class="barra-aviso">Entregas em Franca-SP · Pedidos com no mínimo 2 dias de antecedência</div>
+
+  <header class="topo">
+    <a class="topo-voltar" href="index.html">← Voltar à loja</a>
+    <a class="topo-marca" href="index.html">
+      <span class="marca-titulo">Studio Moreira</span>
+      <span class="marca-sub">Personalização e Design</span>
+    </a>
+    <a class="topo-carrinho" href="index.html#carrinho" aria-label="Ver carrinho">
+      🛒<span id="carrinho-count" class="carrinho-badge">0</span>
+    </a>
+  </header>
+
+  <main class="produto-pagina">
+    <p id="estado" class="estado">Carregando produto...</p>
+
+    <article id="produto" class="produto oculto">
+      <div class="galeria">
+        <div class="galeria-principal" id="galeria-principal">
+          <img id="foto-principal" src="" alt="">
+          <button type="button" class="galeria-seta ant oculto" id="galeria-ant" aria-label="Foto anterior">‹</button>
+          <button type="button" class="galeria-seta prox oculto" id="galeria-prox" aria-label="Próxima foto">›</button>
+          <span class="galeria-contador oculto" id="galeria-contador"></span>
+        </div>
+        <div class="galeria-thumbs oculto" id="galeria-thumbs"></div>
+      </div>
+
+      <div class="detalhes">
+        <span class="categoria" id="produto-categoria"></span>
+        <h1 id="produto-titulo"></h1>
+        <p class="preco" id="produto-preco"></p>
+
+        <div class="secao">
+          <h2>O que acompanha</h2>
+          <ul id="produto-itens" class="itens"></ul>
+        </div>
+
+        <ul class="infos">
+          <li>🗓️ Pedidos com no mínimo <strong>2 dias de antecedência</strong></li>
+          <li>🚚 Entrega em Franca-SP: <strong>+ R$ 10,00</strong></li>
+          <li>💳 Parcelamos em até <strong>2x na maquininha</strong> (acréscimo de 10%)</li>
+        </ul>
+
+        <button type="button" id="btn-carrinho" class="btn-principal">Adicionar ao carrinho</button>
+        <a id="btn-whatsapp" class="btn-secundario" target="_blank" rel="noopener">💬 Tirar dúvida pelo WhatsApp</a>
+      </div>
+    </article>
+
+    <div id="nao-encontrado" class="nao-encontrado oculto">
+      <p>Não encontramos esse produto 😢</p>
+      <a class="btn-secundario" href="index.html">Ver todos os produtos</a>
+    </div>
+  </main>
+
+  <footer>© 2026 Studio Moreira — Buquês e Cestas Personalizados com Amor 🌸</footer>
+
+  <div id="lightbox" class="lightbox oculto" role="dialog" aria-label="Foto ampliada">
+    <button type="button" class="lightbox-fechar" id="lightbox-fechar" aria-label="Fechar">✕</button>
+    <img id="lightbox-img" src="" alt="">
+  </div>
+
+  <script src="produto.js" defer></script>
+</body>
+</html>

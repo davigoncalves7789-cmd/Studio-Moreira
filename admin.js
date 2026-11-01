@@ -99,6 +99,13 @@ let produtoEmEdicao = null;
 let fotoAtualUrl = null;
 let produtosCacheAdmin = {};
 
+// Fotos extras (outros ângulos). "Atuais" são URLs que já estão no
+// produto (só na edição); "novas" são arquivos escolhidos agora, ainda
+// não enviados. O total das duas não pode passar do limite.
+const MAX_FOTOS_EXTRAS = 5;
+let extrasAtuais = [];
+let extrasNovas = []; // { arquivo, url (preview local) }
+
 const tituloForm = document.getElementById('titulo-form-produto');
 const btnSalvarProduto = document.getElementById('btn-salvar-produto');
 const btnCancelarEdicao = document.getElementById('btn-cancelar-edicao');
@@ -114,6 +121,10 @@ function entrarModoEdicao(produto) {
   document.getElementById('produto-itens').value = (produto.itens || []).join('\n');
   document.getElementById('produto-preco').value = produto.preco;
   inputMaisVendido.checked = Boolean(produto.mais_vendido);
+
+  extrasAtuais = Array.isArray(produto.imagens_extras) ? [...produto.imagens_extras] : [];
+  limparExtrasNovas();
+  renderizarExtras();
 
   inputFoto.value = '';
   inputFoto.required = false;
@@ -136,6 +147,9 @@ function sairModoEdicao() {
 
   document.getElementById('form-produto').reset();
   inputMaisVendido.checked = false;
+  extrasAtuais = [];
+  limparExtrasNovas();
+  renderizarExtras();
   inputFoto.required = true;
   previewFoto.classList.add('oculto');
   avisoFotoEdicao.classList.add('oculto');
@@ -150,6 +164,71 @@ function sairModoEdicao() {
 }
 
 btnCancelarEdicao.addEventListener('click', sairModoEdicao);
+
+// ── Fotos extras: escolher, pré-visualizar e remover ────────────────
+const inputExtras = document.getElementById('produto-fotos-extras');
+const listaExtras = document.getElementById('produto-extras-lista');
+
+function limparExtrasNovas() {
+  extrasNovas.forEach(e => URL.revokeObjectURL(e.url));
+  extrasNovas = [];
+}
+
+function criarItemExtra(src, ehNova, aoRemover) {
+  const item = document.createElement('div');
+  item.className = 'extra-item' + (ehNova ? ' nova' : '');
+
+  const img = document.createElement('img');
+  img.src = src;
+  img.alt = '';
+
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'extra-remover';
+  btn.setAttribute('aria-label', 'Remover foto');
+  btn.textContent = '✕';
+  btn.addEventListener('click', aoRemover);
+
+  item.append(img, btn);
+  return item;
+}
+
+function renderizarExtras() {
+  listaExtras.innerHTML = '';
+  extrasAtuais.forEach((url, i) => {
+    listaExtras.appendChild(criarItemExtra(url, false, () => {
+      extrasAtuais.splice(i, 1);
+      renderizarExtras();
+    }));
+  });
+  extrasNovas.forEach((e, i) => {
+    listaExtras.appendChild(criarItemExtra(e.url, true, () => {
+      URL.revokeObjectURL(e.url);
+      extrasNovas.splice(i, 1);
+      renderizarExtras();
+    }));
+  });
+  listaExtras.classList.toggle('oculto', extrasAtuais.length + extrasNovas.length === 0);
+}
+
+// Cada seleção SOMA às anteriores (o input é zerado depois), assim dá
+// pra ir adicionando fotos aos poucos e remover uma por uma.
+inputExtras.addEventListener('change', () => {
+  const erroEl = document.getElementById('produto-erro');
+  erroEl.textContent = '';
+
+  const escolhidos = Array.from(inputExtras.files);
+  inputExtras.value = '';
+
+  const vagas = MAX_FOTOS_EXTRAS - extrasAtuais.length - extrasNovas.length;
+  escolhidos.slice(0, Math.max(0, vagas)).forEach(arquivo => {
+    extrasNovas.push({ arquivo, url: URL.createObjectURL(arquivo) });
+  });
+  if (escolhidos.length > vagas) {
+    erroEl.textContent = `Limite de ${MAX_FOTOS_EXTRAS} fotos extras por produto. Remova alguma pra adicionar outra.`;
+  }
+  renderizarExtras();
+});
 
 // ── Gera um id único e legível a partir do nome do produto ──────────
 function gerarId(nome) {
@@ -212,6 +291,15 @@ document.getElementById('form-produto').addEventListener('submit', async (e) => 
   try {
     const imagemUrl = arquivo ? await subirFoto(arquivo, id) : fotoAtualUrl;
 
+    // Extras novas sobem uma a uma (nome com timestamp pra nunca colidir
+    // com arquivo existente); as que já estavam no produto só entram na
+    // lista de novo, a menos que tenham sido removidas.
+    const urlsNovas = [];
+    for (let i = 0; i < extrasNovas.length; i++) {
+      urlsNovas.push(await subirFoto(extrasNovas[i].arquivo, `${id}-extra-${Date.now()}-${i}`));
+    }
+    const imagensExtras = [...extrasAtuais, ...urlsNovas];
+
     const dadosProduto = {
       categoria,
       nome_exibicao: nome,
@@ -223,6 +311,7 @@ document.getElementById('form-produto').addEventListener('submit', async (e) => 
       itens,
       preco,
       mais_vendido: inputMaisVendido.checked,
+      imagens_extras: imagensExtras,
     };
 
     const { error } = editando
