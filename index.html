@@ -50,16 +50,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="index.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+    <link rel="preconnect" href="https://padjfxslzjhgtqujdkbx.supabase.co" crossorigin>
 </head>
 <body>
-
-  <div class="icones-flutuantes">
-    <div id="info-icone" onclick="abrirInfo()">ℹ️ Info</div>
-    <div id="carrinho-icone" onclick="ativarAba('carrinho')">
-      🛒<span id="carrinho-count" class="carrinho-badge">0</span>
-    </div>
-  </div>
 
   <!-- Painel de Informações — janela modal com fundo escurecido. -->
   <div id="info-painel" onclick="fecharInfo()">
@@ -69,59 +62,53 @@
       <p>Algumas informações importantes antes de fazer seu pedido:</p>
       <ul class="info-lista">
         <li>🗓️ Pedidos devem ser feitos com no mínimo <strong>2 dias de antecedência</strong>.</li>
-        <li>💳 Parcelamos em até <strong>2x na maquininha</strong>, sem juros.</li>
+        <li>💳 Parcelamos em até <strong>2x na maquininha</strong>, com acréscimo de <strong>10%</strong> sobre o valor total.</li>
         <li>📦 Entregas fora de Franca-SP têm acréscimo equivalente à <strong>taxa dos Correios</strong>.</li>
-        <li>🚚 Entregas dentro de Franca-SP têm taxa fixa de <strong>+ R$ 12,00</strong>.</li>
+        <li>🚚 Entregas dentro de Franca-SP têm taxa fixa de <strong>+ R$ 10,00</strong>.</li>
       </ul>
       <button onclick="fecharInfo()">Entendi</button>
     </div>
   </div>
 
-  <header>
-    <div class="header-top">
-      <div class="header-banner">
-        <div class="links">
-          <a class="instagram" href="https://www.instagram.com/studio.moreira_oficial?utm_source=qr&igsh=MXFiajhuZTcxM2hzbg==">📸 Instagram</a>
-          <a class="whatsapp" href="https://wa.me/5516992631717?text=Ol%C3%A1!%20Gostaria%20de%20fazer%20um%20buqu%C3%AA%20personalizado.">💬 Faça o seu personalizado!</a>
-          <a class="tiktok" href="https://www.tiktok.com/@studio.moreira_oficial?_r=1&_t=ZS-95fzfuDxhi6">🎵 TikTok</a>
-        </div>
-      </div>
-      <div class="brand-center">
-        <h1 class="brand-title">Studio Moreira</h1>
-        <p class="brand-subtitle">Personalização e Design</p>
-      </div>
-      <div class="logo">
-        <img src="./img/logo studio moreira.jpeg" alt="Logo">
-      </div>
-    </div>
-    <div class="search-wrap">
-      <button id="search-toggle" class="search-icone" onclick="toggleBusca()" aria-label="Abrir busca">🔍</button>
+  <header class="topo">
+    <div class="topo-linha">
+      <a class="topo-marca" href="index.html" aria-label="Studio Moreira — início">
+        <img src="./img/logo studio moreira.jpeg" alt="" width="52" height="52">
+        <span class="topo-marca-texto">
+          <h1 class="brand-title">Studio Moreira</h1>
+          <span class="brand-subtitle">Personalização e Design</span>
+        </span>
+      </a>
+
       <div class="busca-input-wrap">
         <input type="text"
                id="searchInput"
                class="busca-input"
-               placeholder="Digite o buquê que você quer (ex: rosa, vermelho, corinthians…)" />
+               placeholder="Buscar buquês e cestas…"
+               aria-label="Buscar produtos"
+               autocomplete="off" />
         <button id="clear-search" class="clear-search oculto" type="button" aria-label="Limpar busca">✕</button>
+        <span class="busca-icone" aria-hidden="true">🔍</span>
+      </div>
+
+      <div class="topo-acoes">
+        <button type="button" id="info-icone" onclick="abrirInfo()">ℹ️ <span>Info</span></button>
+        <button type="button" id="carrinho-icone" onclick="ativarAba('carrinho')" aria-label="Abrir carrinho">
+          🛒<span id="carrinho-count" class="carrinho-badge">0</span>
+        </button>
       </div>
     </div>
   </header>
 
-  <!-- ABAS — perto da busca, no topo. Só o painel da aba ativa fica visível. -->
+  <!-- CATEGORIAS — barra colorida logo abaixo do topo. Só o painel da aba ativa fica visível. -->
   <nav class="abas-categorias" role="tablist" aria-label="Categorias de produtos">
     <button class="aba ativa" data-aba="geral" role="tab" aria-selected="true">Geral</button>
-    <button class="aba" data-aba="buques" role="tab" aria-selected="false">🌹 Buquês</button>
-    <button class="aba" data-aba="glitter" role="tab" aria-selected="false">✨ Glitter</button>
-    <button class="aba" data-aba="personalizados" role="tab" aria-selected="false">🎨 Personalizados</button>
-    <button class="aba" data-aba="cestas" role="tab" aria-selected="false">🎁 Cestas</button>
-    <button class="aba" data-aba="escritorio" role="tab" aria-selected="false">🏢 Escritório</button>
+    <button class="aba" data-aba="buques" role="tab" aria-selected="false">Buquês</button>
+    <button class="aba" data-aba="glitter" role="tab" aria-selected="false">Glitter</button>
+    <button class="aba" data-aba="personalizados" role="tab" aria-selected="false">Personalizados</button>
+    <button class="aba" data-aba="cestas" role="tab" aria-selected="false">Cestas</button>
+    <button class="aba" data-aba="escritorio" role="tab" aria-selected="false">Escritório</button>
   </nav>
-
-  <!-- BANNER DE DESTAQUE — mensagem gira automaticamente (ver scripts.js) -->
-  <section class="hero-banner">
-    <div class="hero-banner-inner">
-      <p id="hero-banner-texto" class="hero-banner-texto">Flores que contam histórias, momentos que se tornam memórias.</p>
-    </div>
-  </section>
 
   <div id="erro-carregamento" class="erro-carregamento oculto" role="alert">
     ⚠️ Não conseguimos carregar os produtos agora. Tente novamente em alguns instantes.
@@ -135,6 +122,13 @@
       <section class="vitrine-giratoria" id="vitrine-giratoria">
         <div class="vitrine-slide" id="vitrine-slide"></div>
         <div class="vitrine-dots" id="vitrine-dots"></div>
+      </section>
+
+      <section class="beneficios" aria-label="Como funciona">
+        <div class="beneficio"><span class="beneficio-icone">💬</span><div><strong>Peça pelo WhatsApp</strong><span>Atendimento direto com a gente</span></div></div>
+        <div class="beneficio"><span class="beneficio-icone">🚚</span><div><strong>Entrega em Franca-SP</strong><span>Taxa fixa de R$ 10,00</span></div></div>
+        <div class="beneficio"><span class="beneficio-icone">💳</span><div><strong>Parcele em até 2x</strong><span>Na maquininha (+10%)</span></div></div>
+        <div class="beneficio"><span class="beneficio-icone">🗓️</span><div><strong>Encomende com 2 dias</strong><span>De antecedência, no mínimo</span></div></div>
       </section>
 
       <h2 class="galeria-title">⭐ Mais Vendidos</h2>
@@ -183,7 +177,7 @@
   <!-- CESTAS -->
   <section class="tab-painel oculto" data-categoria="cestas">
     <h2 class="galeria-title">🎁 Cestas Personalizadas</h2>
-    <div class="banner-cesta" id="galeria-cestas">
+    <div class="grid-produtos" id="galeria-cestas">
       <div id="noResultsCestas" class="no-results">Nenhuma cesta encontrada 😢</div>
     </div>
   </section>
@@ -211,14 +205,21 @@
     </div>
   </section>
 
+  <section class="cta-personalizado">
+    <div>
+      <h2>Quer um buquê só seu?</h2>
+      <p>Conta pra gente o que você imagina e a gente monta pra você.</p>
+    </div>
+    <a class="cta-botao" href="https://wa.me/5516992631717?text=Ol%C3%A1!%20Gostaria%20de%20fazer%20um%20buqu%C3%AA%20personalizado.">💬 Falar no WhatsApp</a>
+  </section>
+
   <footer>
+    <div class="rodape-links">
+      <a href="https://www.instagram.com/studio.moreira_oficial?utm_source=qr&igsh=MXFiajhuZTcxM2hzbg==">📸 Instagram</a>
+      <a href="https://www.tiktok.com/@studio.moreira_oficial?_r=1&_t=ZS-95fzfuDxhi6">🎵 TikTok</a>
+    </div>
     © 2026 Studio Moreira — Buquês e Cestas Personalizados com Amor 🌸
   </footer>
-
-  <div id="lightbox" onclick="fecharLightbox()">
-    <span id="lightbox-fechar">✕</span>
-    <img id="lightbox-img" src="" alt="">
-  </div>
 
   <script src="scripts.js" defer></script>
 

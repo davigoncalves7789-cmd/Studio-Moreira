@@ -6,35 +6,13 @@
 const SUPABASE_URL = 'https://padjfxslzjhgtqujdkbx.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_50YMqseOFR5Yma5AF1FCuQ_Y5xVaHBj';
 
-// Em conexões mais lentas ou instáveis (comum em celular), o script do
-// CDN do Supabase pode não terminar de carregar a tempo. Sem essa
-// checagem, "window.supabase" viria undefined e a linha abaixo travaria
-// com um erro fatal. Com a checagem, se o CDN falhar, supabaseClient
-// fica null e o carregarProdutos() cai direto no fallback local.
-const supabaseClient = (typeof window.supabase !== 'undefined')
-  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
-  : null;
-
-function abrirLightbox(src, alt) {
-  const lb = document.getElementById('lightbox');
-  document.getElementById('lightbox-img').src = src;
-  document.getElementById('lightbox-img').alt = alt;
-  lb.classList.add('ativo');
-}
-
-function fecharLightbox() {
-  document.getElementById('lightbox').classList.remove('ativo');
-}
+// A loja só LÊ produtos, então não precisa carregar a biblioteca
+// inteira do Supabase (centenas de KB): um fetch direto na API REST
+// faz o mesmo e começa antes. O admin continua usando a biblioteca.
+const SUPABASE_PRODUTOS_URL = `${SUPABASE_URL}/rest/v1/produtos?select=*&order=criado_em.asc`;
 
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') {
-    fecharLightbox();
-    fecharInfo();
-  }
-});
-
-document.getElementById('lightbox-img').addEventListener('click', e => {
-  e.stopPropagation();
+  if (e.key === 'Escape') fecharInfo();
 });
 
 // ── Painel de Informações — janela modal (display:flex centraliza). ──
@@ -75,45 +53,24 @@ const CATEGORIA_LABEL = {
 };
 
 function criarCardHtml(p) {
+  const id = escapeAttr(p.id);
   return `
     <div class="card"
          data-title="${escapeAttr(p.nomeBusca)}"
          data-desc="${escapeAttr(p.descBusca)}"
          data-categoria="${escapeAttr(CATEGORIA_LABEL[p.categoria] || p.categoria)}">
-      <div class="card-title">${p.nomeExibicao}</div>
-      <div class="card-body">
-        <img src="${p.imagem}" alt="${escapeAttr(p.imagemAlt)}" loading="lazy" decoding="async" class="produto-clicavel" data-produto-id="${escapeAttr(p.id)}" />
-        <div class="card-desc">
-          <span class="preco">Valor: R$ ${p.preco}</span>
-          <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
-            data-nome="${escapeAttr(p.nomeCarrinho)}"
-            data-preco="${p.preco}"
-            data-descricao="${escapeAttr(p.descBusca)}">
-            🛒 Adicionar
-          </button>
-        </div>
+      <div class="card-foto">
+        <img src="${escapeAttr(p.imagem)}" alt="${escapeAttr(p.imagemAlt)}" width="480" height="600" loading="lazy" decoding="async" class="produto-clicavel" data-produto-id="${id}">
       </div>
-    </div>`;
-}
-
-function criarCardCestaHtml(p) {
-  return `
-    <div class="card-cesta"
-         data-title="${escapeAttr(p.nomeBusca)}"
-         data-desc="${escapeAttr(p.descBusca)}"
-         data-categoria="${escapeAttr(CATEGORIA_LABEL[p.categoria] || p.categoria)}">
-      <h2>${p.nomeExibicao}</h2>
-      <div class="card-body-cesta">
-        <img src="${p.imagem}" alt="${escapeAttr(p.imagemAlt)}" loading="lazy" decoding="async" class="produto-clicavel" data-produto-id="${escapeAttr(p.id)}">
-        <div class="card-desc-cesta">
-          <span class="preco">Valor: R$ ${p.preco}</span>
-          <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
-            data-nome="${escapeAttr(p.nomeCarrinho)}"
-            data-preco="${p.preco}"
-            data-descricao="${escapeAttr(p.descBusca)}">
-            🛒 Adicionar
-          </button>
-        </div>
+      <div class="card-info">
+        <h3 class="card-nome produto-clicavel" data-produto-id="${id}">${escapeAttr(p.nomeExibicao)}</h3>
+        <span class="card-preco">R$ ${escapeAttr(p.preco)}</span>
+        <button class="btn-adicionar" onclick="adicionarCarrinho(this)"
+          data-nome="${escapeAttr(p.nomeCarrinho)}"
+          data-preco="${escapeAttr(p.preco)}"
+          data-descricao="${escapeAttr(p.descBusca)}">
+          Comprar
+        </button>
       </div>
     </div>`;
 }
@@ -144,12 +101,10 @@ function renderizarProdutos(produtos) {
       console.warn('Categoria desconhecida no produtos.json:', p.categoria, p);
       return;
     }
-    const html = p.categoria === 'cestas' ? criarCardCestaHtml(p) : criarCardHtml(p);
-    inserirCardEm(containerId, html);
+    inserirCardEm(containerId, criarCardHtml(p));
 
     // Produto marcado como "mais vendido" no admin aparece também na
-    // aba Geral, sempre no estilo de card padrão (mesmo se for cesta),
-    // pra manter a grade uniforme.
+    // aba Geral.
     if (p.maisVendido) {
       inserirCardEm('galeria-mais-vendidos', criarCardHtml(p));
     }
@@ -267,15 +222,10 @@ function finalizarEstadoCarregando() {
 
 async function carregarProdutos() {
   try {
-    if (!supabaseClient) throw new Error('Cliente Supabase indisponível (CDN não carregou a tempo)');
-
-    const { data, error } = await supabaseClient
-      .from('produtos')
-      .select('*')
-      .order('criado_em', { ascending: true });
-
-    if (error) throw error;
-    if (!data || data.length === 0) throw new Error('Nenhum produto retornado do banco');
+    const resp = await fetch(SUPABASE_PRODUTOS_URL, { headers: { apikey: SUPABASE_KEY } });
+    if (!resp.ok) throw new Error(`Supabase respondeu com status ${resp.status}`);
+    const data = await resp.json();
+    if (!Array.isArray(data) || data.length === 0) throw new Error('Nenhum produto retornado do banco');
 
     renderizarProdutos(data.map(mapearProdutoDoBanco));
   } catch (err) {
@@ -328,33 +278,16 @@ function ativarAba(nomeAba) {
     try { sessionStorage.setItem(ABA_STORAGE_KEY, nomeAba); } catch (err) { /* sem storage: ignora */ }
   }
 
+  // O topo fica grudado na tela, então desconta a altura dele pra a
+  // barra de categorias não parar escondida embaixo.
   const barra = document.querySelector('.abas-categorias');
-  if (barra) window.scrollTo({ top: barra.offsetTop - 8, behavior: 'smooth' });
+  const topo = document.querySelector('.topo');
+  if (barra) window.scrollTo({ top: barra.offsetTop - (topo ? topo.offsetHeight : 0), behavior: 'smooth' });
 }
 
 abas.forEach(btn => {
   btn.addEventListener('click', () => ativarAba(btn.dataset.aba));
 });
-
-// ── Banner de destaque — mensagens rodando em loop com fade ────────
-const HERO_MENSAGENS = [
-  'Flores que contam histórias, momentos que se tornam memórias.',
-  '🌸 Peça pelo WhatsApp e receba com todo carinho em Franca-SP.',
-  '🎁 Aceitamos encomendas personalizadas — fale com a gente!',
-];
-let heroIndex = 0;
-
-function girarHeroBanner() {
-  const el = document.getElementById('hero-banner-texto');
-  if (!el) return;
-  el.classList.add('sumindo');
-  setTimeout(() => {
-    heroIndex = (heroIndex + 1) % HERO_MENSAGENS.length;
-    el.textContent = HERO_MENSAGENS[heroIndex];
-    el.classList.remove('sumindo');
-  }, 400);
-}
-setInterval(girarHeroBanner, 4500);
 
 // ── Busca ───────────────────────────────────────────────────────────
 // Config de todas as galerias que a busca precisa filtrar + o "sem
@@ -367,7 +300,7 @@ const GALERIAS = [
   { id: 'galeria',                seletorCard: '.card',       sentinelaId: 'noResults' },
   { id: 'galeria-glitter',        seletorCard: '.card',       sentinelaId: 'noResultsGlitter' },
   { id: 'galeria-personalizados', seletorCard: '.card',       sentinelaId: 'noResultsPersonalizados' },
-  { id: 'galeria-cestas',         seletorCard: '.card-cesta', sentinelaId: 'noResultsCestas' },
+  { id: 'galeria-cestas',         seletorCard: '.card',       sentinelaId: 'noResultsCestas' },
   { id: 'galeria-escritorio',     seletorCard: '.card',       sentinelaId: 'noResultsEscritorio' },
 ];
 
@@ -382,21 +315,6 @@ btnLimparBusca.addEventListener('click', () => {
   input.value = '';
   input.dispatchEvent(new Event('input'));
   input.focus();
-});
-
-function toggleBusca() {
-  const wrap = document.querySelector('.search-wrap');
-  const vaiAbrir = !wrap.classList.contains('aberta');
-  wrap.classList.toggle('aberta', vaiAbrir);
-  if (vaiAbrir) input.focus();
-}
-
-// Se o campo perder o foco vazio, recolhe de volta pra só o ícone —
-// mas só fecha se realmente não tem texto digitado.
-input.addEventListener('blur', () => {
-  if (!input.value.trim()) {
-    document.querySelector('.search-wrap').classList.remove('aberta');
-  }
 });
 
 function normalize(str) {
@@ -599,16 +517,10 @@ function finalizarPedido() {
   atualizarCarrinho();
 }
 
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach((entry) => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add('visivel');
-      observer.unobserve(entry.target);
-    }
-  });
-}, { threshold: 0.1 });
-
-window.addEventListener('load', async () => {
+// Roda direto (o script é "defer": o HTML já foi lido). Antes esperava o
+// evento "load", que só dispara depois de TODAS as imagens e fontes —
+// isso atrasava a busca dos produtos à toa.
+async function iniciar() {
   atualizarContadorCarrinho();
   atualizarCarrinho();
 
@@ -616,10 +528,6 @@ window.addEventListener('load', async () => {
   await carregarProdutos();
   finalizarEstadoCarregando();
   GALERIAS.forEach(atualizarVazio);
-
-  document.querySelectorAll('.card, .card-cesta').forEach(el => {
-    observer.observe(el);
-  });
 
   // produto.html manda pra cá com #carrinho; senão, volta pra última aba.
   let abaInicial = null;
@@ -631,12 +539,13 @@ window.addEventListener('load', async () => {
   if (abaInicial && abaInicial !== 'geral' && document.querySelector(`.aba[data-aba="${abaInicial}"], .tab-painel[data-categoria="${abaInicial}"]`)) {
     ativarAba(abaInicial);
   }
+}
 
-  document.querySelectorAll('.produto-clicavel').forEach(img => {
-    img.style.cursor = 'pointer';
-    img.addEventListener('click', e => {
-      e.stopPropagation();
-      abrirProduto(img.dataset.produtoId);
-    });
-  });
+// Um único listener resolve o clique na foto/nome de qualquer card,
+// inclusive dos que só aparecem depois do carregamento.
+document.addEventListener('click', e => {
+  const alvo = e.target.closest('.produto-clicavel');
+  if (alvo && alvo.dataset.produtoId) abrirProduto(alvo.dataset.produtoId);
 });
+
+iniciar();

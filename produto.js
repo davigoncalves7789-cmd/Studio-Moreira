@@ -6,12 +6,6 @@ const SUPABASE_KEY = 'sb_publishable_50YMqseOFR5Yma5AF1FCuQ_Y5xVaHBj';
 const WHATSAPP_NUMERO = '5516992631717';
 const CARRINHO_STORAGE_KEY = 'studio-moreira:carrinho'; // mesma chave da loja
 
-// Se o CDN do Supabase não carregar a tempo, supabaseClient fica null e
-// a página cai direto no produtos.json local (mesma lógica da loja).
-const supabaseClient = (typeof window.supabase !== 'undefined')
-  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
-  : null;
-
 const CATEGORIA_LABEL = {
   buques: 'Buquês',
   glitter: 'Buquês com Glitter',
@@ -36,16 +30,17 @@ function mapearProdutoDoBanco(row) {
   };
 }
 
-// null = o produto não existe. Só cai pro produtos.json se o Supabase
-// falhar de verdade (fora do ar, sem CDN) — não quando ele responde
-// "esse id não existe".
+// Busca direta na API REST do Supabase (sem carregar a biblioteca
+// inteira só pra ler um produto). null = o produto não existe. Só cai
+// pro produtos.json se o Supabase falhar de verdade (fora do ar, sem
+// internet) — não quando ele responde "esse id não existe".
 async function buscarProduto(id) {
   try {
-    if (!supabaseClient) throw new Error('Cliente Supabase indisponível');
-    const { data, error } = await supabaseClient
-      .from('produtos').select('*').eq('id', id).maybeSingle();
-    if (error) throw error;
-    return data ? mapearProdutoDoBanco(data) : null;
+    const url = `${SUPABASE_URL}/rest/v1/produtos?select=*&id=eq.${encodeURIComponent(id)}&limit=1`;
+    const resp = await fetch(url, { headers: { apikey: SUPABASE_KEY } });
+    if (!resp.ok) throw new Error(`Supabase respondeu com status ${resp.status}`);
+    const linhas = await resp.json();
+    return linhas.length ? mapearProdutoDoBanco(linhas[0]) : null;
   } catch (err) {
     console.error('Erro ao buscar no Supabase, usando produtos.json como backup:', err);
     const resp = await fetch('produtos.json');

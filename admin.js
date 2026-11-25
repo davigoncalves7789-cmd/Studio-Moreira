@@ -241,7 +241,41 @@ function gerarId(nome) {
   return `${slug}-${Date.now()}`;
 }
 
-async function subirFoto(arquivo, id) {
+// Foto de celular costuma ter 3-6 MB e deixa o site lento. Antes de
+// enviar, reduz pra no máximo 1400px no lado maior e salva como JPEG
+// (qualidade 85) — fica em geral 10x menor e continua nítida na tela.
+// Se algo der errado (formato estranho), envia o arquivo original.
+const FOTO_LADO_MAX = 1400;
+
+async function comprimirFoto(arquivo) {
+  try {
+    const bitmap = await createImageBitmap(arquivo);
+    const escala = Math.min(1, FOTO_LADO_MAX / Math.max(bitmap.width, bitmap.height));
+    const largura = Math.round(bitmap.width * escala);
+    const altura = Math.round(bitmap.height * escala);
+
+    const canvas = document.createElement('canvas');
+    canvas.width = largura;
+    canvas.height = altura;
+    const ctx = canvas.getContext('2d');
+    // Fundo branco: PNG com transparência viraria preto ao ir pra JPEG.
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, largura, altura);
+    ctx.drawImage(bitmap, 0, 0, largura, altura);
+    bitmap.close?.();
+
+    const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.85));
+    if (!blob || blob.size >= arquivo.size) return arquivo; // não compensou
+    const base = arquivo.name.replace(/\.[^.]+$/, '');
+    return new File([blob], `${base}.jpg`, { type: 'image/jpeg' });
+  } catch (err) {
+    console.warn('Não consegui comprimir a foto, enviando o original:', err);
+    return arquivo;
+  }
+}
+
+async function subirFoto(arquivoOriginal, id) {
+  const arquivo = await comprimirFoto(arquivoOriginal);
   const extensao = arquivo.name.split('.').pop();
   const caminho = `${id}.${extensao}`;
 
@@ -289,7 +323,7 @@ document.getElementById('form-produto').addEventListener('submit', async (e) => 
   btn.textContent = editando ? 'Salvando...' : 'Enviando...';
 
   try {
-    const imagemUrl = arquivo ? await subirFoto(arquivo, id) : fotoAtualUrl;
+    const imagemUrl = arquivo ? await subirFoto(arquivo, `${id}-${Date.now()}`) : fotoAtualUrl;
 
     // Extras novas sobem uma a uma (nome com timestamp pra nunca colidir
     // com arquivo existente); as que já estavam no produto só entram na
@@ -320,8 +354,8 @@ document.getElementById('form-produto').addEventListener('submit', async (e) => 
 
     if (error) throw error;
 
+    sairModoEdicao(); // limpa as mensagens, então o aviso vem depois
     sucessoEl.textContent = editando ? 'Produto atualizado!' : 'Produto adicionado! Já está no ar.';
-    sairModoEdicao();
     carregarListaProdutos();
   } catch (err) {
     console.error('Erro ao salvar produto:', err);
